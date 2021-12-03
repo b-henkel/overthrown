@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import { initGameState, addUser } from "../../game/game-state";
 
 /*
 const gamestate = {
@@ -17,21 +18,43 @@ const ioHandler = (req, res) => {
     const io = new Server(res.socket.server);
 
     io.on("connection", (socket) => {
-      socket.broadcast.emit("a user connected");
+      socket.emit("a user connected");
       socket.on("hello", (msg) => {
         socket.emit("hello", "world!");
       });
-    });
 
-    socket.on("gamecreate", (data) => {
-      // TODO create a new UUID for the game session
-      // and send it back to the client
-      // Also, create a new game state object
-    });
+      socket.on("join", (room) => {
+        console.log(`Socket ${socket.id} joining ${room}`);
+        socket.join(room);
+      });
+      socket.on("chat", (data) => {
+        const { message, room } = data;
+        console.log(`msg: ${message}, room: ${room}`);
+        io.to(room).emit("chat", message);
+      });
+      //  });
 
-    socket.on("useraction", (data) => {
-      // work out what has happened, update the game state object
-      // Then broadcast this updated data back to all clients.
+      socket.on("gamestart", (data) => {
+        // how the heck do we maintain the channel correctly between multiple
+        // pages joining the socket.
+        // What even is the linking data?
+        // const newGame = initGameState(socket);
+      });
+
+      socket.on("add-user", (data) => {
+        console.log(`Trying to add user ${JSON.stringify(data)}`);
+        // TODO need to mod the global game object to add the users?
+        addUser(socket, data.gameId, {
+          id: socket.id,
+          name: data.username,
+        });
+        // socket.to(data.gameId).emit("state-update", updatedGameState);
+      });
+
+      socket.on("useraction", (data) => {
+        // depending on the action type, call some function in game-state.js and pass the socket
+        // so that it can re-emit the updated state
+      });
     });
 
     res.socket.server.io = io;

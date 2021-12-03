@@ -1,13 +1,11 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { initGameState } from "../../game/game-state";
 
 export default function handler(req, res) {
-  // TODO should generate the unique game id
-
-  const randomGameId = 7;
-
-  // TODO need to load this game id into the actual game state store object
+  const newGame = initGameState();
 
   // should also redirect to that game url
-  res.redirect(`/lobby/${randomGameId}`);
+  // XXX Can we like also forward some json to that page? like, form the page with extra data?
+  // getStaticProps maybe??
+  res.redirect(`/game/${newGame.id}`);
   // res.status(200).json({ name: "John Doe" });
 }
