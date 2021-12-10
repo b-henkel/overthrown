@@ -1,51 +1,52 @@
-import React, { Component } from "react";
-import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
-import io from "socket.io-client";
+import React, { Component } from 'react';
+import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
+import io from 'socket.io-client';
+import Game from '../../components/game';
 
 // TODO the initial game object with users should be marked with some started:False flag
 function GameBase() {
   const router = useRouter();
   const { id: gameId } = router.query;
   const [socket, setSocket] = useState(null);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState('');
   const [gamestate, setGamestate] = useState(null);
 
   useEffect(() => {
-    fetch("/api/socketio").finally(() => {
+    fetch('/api/socketio').finally(() => {
       const socket = io();
       setSocket(socket);
 
-      socket.on("connect", () => {
-        console.log("connect");
-        socket.emit("hello", "init");
+      socket.on('connect', () => {
+        console.log('connect');
+        socket.emit('hello', 'init');
       });
 
-      socket.on("hello", (data) => {
-        console.log("hello", data);
+      socket.on('hello', (data) => {
+        console.log('hello', data);
       });
 
-      socket.on("a user connected", () => {
-        console.log("a user connected");
+      socket.on('a user connected', () => {
+        console.log('a user connected');
       });
 
-      socket.on("state-update", (state) => {
-        console.log("Update state:", state);
+      socket.on('state-update', (state) => {
+        console.log('Update state:', state);
         setGamestate(state);
       });
 
-      socket.on("disconnect", () => {
-        console.log("disconnect");
+      socket.on('disconnect', () => {
+        console.log('disconnect');
       });
     });
   }, []);
 
   useEffect(() => {
     if (socket && gameId) {
-      socket.emit("join", gameId);
-      console.log("Joined");
+      socket.emit('join', gameId);
+      console.log('Joined');
     } else {
-      console.log("no socket or gameId available to join");
+      console.log('no socket or gameId available to join');
     }
   }, [socket, gameId]);
 
@@ -55,10 +56,10 @@ function GameBase() {
     // grab the text box's information
     // and then fire an http request
     if (socket) {
-      console.log("Trying to emit?");
-      socket.emit("add-user", { username, gameId });
+      console.log('Trying to emit?');
+      socket.emit('add-user', { username, gameId });
     } else {
-      console.log("no socket available");
+      console.log('no socket available');
     }
   };
 
@@ -79,14 +80,15 @@ function GameBase() {
       </p>
 
       <input
-        id="text_box"
-        type="text"
+        id='text_box'
+        type='text'
         onChange={(e) => setUsername(e.target.value)}
         value={username}
       ></input>
       <button onClick={addUser}>Fire</button>
       <button onClick={startGame}>Start Game</button>
       <p>Duis a turpis sed lacus dapibus elementum sed eu lectus.</p>
+      <Game />
     </div>
   );
 }
