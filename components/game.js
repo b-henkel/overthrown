@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import PlayingCard from './playing-card';
+import Player from './player';
 import { Container } from '@mui/material';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -18,37 +18,31 @@ export default function BasicGrid() {
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2} columns={3} justifyContent={'center'}>
         <Grid item xs={1}>
-          <Container>
-            <PlayingCard />
-          </Container>
+          <Player />
         </Grid>
         <Grid item xs={1}>
-          <Item>
-            <PlayingCard /> hello
-          </Item>
+          <Player />
         </Grid>
         <Grid item xs={1}>
-          <Item>
-            <PlayingCard />
-          </Item>
+          <Player />
         </Grid>
         <Grid item xs={1}>
-          <Item>a grid item</Item>
+          <Player />
         </Grid>
         <Grid item xs={1}>
-          <Item>a grid item</Item>
+          {/* static image of coins and deck of cards */}
         </Grid>
         <Grid item xs={1}>
-          <Item>a grid item</Item>
+          <Player />
         </Grid>
         <Grid item xs={1}>
-          <Item>a grid item</Item>
+          {/* chat/ log */}
         </Grid>
         <Grid item xs={1}>
-          <Item>a grid item</Item>
+          <Player cardA={'/assassin.svg'} style={{ height: '25vh' }} />
         </Grid>
         <Grid item xs={1}>
-          <Item>a grid item</Item>
+          {/* rules/ action panel. lie indicator*/}
         </Grid>
       </Grid>
     </Box>
