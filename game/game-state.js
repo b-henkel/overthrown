@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import cache from 'memory-cache';
-
+import { deal } from './deck';
 const globalGameState = loadGlobalGameState();
 
 function loadGlobalGameState() {
@@ -31,7 +31,13 @@ export const addUser = (socket, gameId, user) => {
     // throw new Error("Somehow adding a user to a game that doesn't exist");
   }
   console.log('adding user', user);
-  gameObj.users[user.id] = user.name;
+  gameObj.users[user.id] = {
+    name: user.name,
+    coins: 2,
+    color: '#FF0000',
+    cardOne: null,
+    cardTwo: null,
+  };
   cache.put('globalGameState', globalGameState);
   console.log(JSON.stringify(gameObj));
   socket.emit('state-update', gameObj);
@@ -41,6 +47,13 @@ export const addUser = (socket, gameId, user) => {
 export const startGame = (socket, gameId) => {
   let gameObj = globalGameState[gameId];
   gameObj.started = true;
+  const { hands, deck } = deal(Object.keys(gameObj.users).length);
+  gameObj.deck = deck;
+  Object.values(gameObj.users).forEach((user, index) => {
+    const hand = hands[index];
+    user.cardOne = hand.cardOne;
+    user.cardTwo = hand.cardTwo;
+  });
   cache.put('globalGameState', globalGameState);
   socket.emit('state-update', gameObj);
   socket.to(gameId).emit('state-update', gameObj);

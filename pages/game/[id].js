@@ -10,7 +10,7 @@ function GameBase() {
   const router = useRouter();
   const { id: gameId } = router.query;
   const [socket, setSocket] = useState(null);
-  const [gamestate, setGamestate] = useState(null);
+  const [gameState, setGameState] = useState(null);
 
   useEffect(() => {
     fetch('/api/socketio').finally(() => {
@@ -32,7 +32,7 @@ function GameBase() {
 
       socket.on('state-update', (state) => {
         console.log('Update state:', state);
-        setGamestate(state);
+        setGameState(state);
       });
 
       socket.on('disconnect', () => {
@@ -54,10 +54,10 @@ function GameBase() {
 
   return (
     <>
-      {gamestate && gamestate.started ? (
-        <Game socket={socket} gamestate={gamestate} />
+      {gameState && gameState.started ? (
+        <Game socket={socket} gameState={gameState} />
       ) : (
-        <Lobby socket={socket} gamestate={gamestate} />
+        <Lobby socket={socket} gameState={gameState} />
       )}
     </>
   );

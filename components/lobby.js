@@ -48,11 +48,11 @@ export default function Lobby(props) {
       <button onClick={startGame}>Start Game</button>
       <p>Duis a turpis sed lacus dapibus elementum sed eu lectus.</p>
       <List>
-        {props.gamestate &&
-          Object.entries(props.gamestate.users).map(([userID, userName]) => {
+        {props.gameState &&
+          Object.entries(props.gameState.users).map(([userID, userObj]) => {
             return (
               <ListItem>
-                <ListItemText primary={userName} key={userID} />
+                <ListItemText primary={userObj.name} key={userID} />
               </ListItem>
             );
           })}

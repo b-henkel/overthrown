@@ -6,13 +6,19 @@ export default function PlayingCard() {
   return (
     <Card>
       <CardMedia
-        sx={{ maxWidth: 200, marginLeft: 'auto', marginRight: 'auto' }}
+        sx={{
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
         component='img'
         image='/card-back.svg'
         alt='card back'
       />
       <CardMedia
-        sx={{ maxWidth: 200, marginLeft: 'auto', marginRight: 'auto' }}
+        sx={{
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
         component='img'
         image='/card-back.svg'
         alt='card back'

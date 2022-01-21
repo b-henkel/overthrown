@@ -10,15 +10,27 @@ import { cardBack } from '../constants/cards';
 
 export default function Player(props) {
   return (
-    <Card>
+    <Card sx={{ whiteSpace: 'nowrap' }}>
       <CardMedia
-        sx={{ ...props.style, marginLeft: 'auto', marginRight: 'auto' }}
+        sx={{
+          ...props.style,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          display: 'inline',
+          width: 'auto',
+        }}
         component='img'
         image={props.cardA}
         alt='card back'
       />
       <CardMedia
-        sx={{ ...props.style, marginLeft: 'auto', marginRight: 'auto' }}
+        sx={{
+          ...props.style,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          display: 'inline',
+          width: 'auto',
+        }}
         component='img'
         image={props.cardB}
         alt='card back'
@@ -31,5 +43,5 @@ Player.defaultProps = {
   coinCount: 0,
   cardB: cardBack,
   cardA: cardBack,
-  style: { height: '12.5vh' },
+  style: { height: '23.5vh' },
 };
