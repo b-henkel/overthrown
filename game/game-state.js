@@ -37,6 +37,7 @@ export const addUser = (socket, gameId, user) => {
     color: '#FF0000',
     cardOne: null,
     cardTwo: null,
+    number: Object.keys(gameObj.users).length + 1,
   };
   cache.put('globalGameState', globalGameState);
   console.log(JSON.stringify(gameObj));

@@ -11,6 +11,7 @@ function GameBase() {
   const { id: gameId } = router.query;
   const [socket, setSocket] = useState(null);
   const [gameState, setGameState] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     fetch('/api/socketio').finally(() => {
@@ -20,6 +21,7 @@ function GameBase() {
       socket.on('connect', () => {
         console.log('connect');
         socket.emit('hello', 'init');
+        setUserId(socket.id);
       });
 
       socket.on('hello', (data) => {
@@ -55,9 +57,9 @@ function GameBase() {
   return (
     <>
       {gameState && gameState.started ? (
-        <Game socket={socket} gameState={gameState} />
+        <Game socket={socket} gameState={gameState} userId={userId} />
       ) : (
-        <Lobby socket={socket} gameState={gameState} />
+        <Lobby socket={socket} gameState={gameState} userId={userId} />
       )}
     </>
   );

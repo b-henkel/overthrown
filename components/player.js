@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardMedia } from '@mui/material';
-import { cardBack } from '../constants/cards';
+import Typography from '@mui/material/Typography';
 
 // TODO fix card spanning issue
 // Add coin count to component
@@ -11,6 +11,9 @@ import { cardBack } from '../constants/cards';
 export default function Player(props) {
   return (
     <Card sx={{ whiteSpace: 'nowrap' }}>
+      <Typography sx={{ fontSize: 18 }} color={props.color} gutterBottom>
+        {props.userName}
+      </Typography>
       <CardMedia
         sx={{
           ...props.style,
@@ -20,8 +23,7 @@ export default function Player(props) {
           width: 'auto',
         }}
         component='img'
-        image={props.cardA}
-        alt='card back'
+        image={props.cardOne}
       />
       <CardMedia
         sx={{
@@ -32,8 +34,7 @@ export default function Player(props) {
           width: 'auto',
         }}
         component='img'
-        image={props.cardB}
-        alt='card back'
+        image={props.cardTwo}
       />
     </Card>
   );
@@ -41,7 +42,7 @@ export default function Player(props) {
 
 Player.defaultProps = {
   coinCount: 0,
-  cardB: cardBack,
-  cardA: cardBack,
+  cardTwo: null,
+  cardOne: null,
   style: { height: '23.5vh' },
 };
