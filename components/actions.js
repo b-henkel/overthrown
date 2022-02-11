@@ -55,7 +55,12 @@ export default function Actions(props) {
             control={<Radio />}
             label='Foreign Aid'
           />
-          <FormControlLabel value='Tax' control={<Radio />} label='Overthrow' />
+          <FormControlLabel
+            value='Tax'
+            control={<Radio />}
+            label='Overthrow'
+            disabled
+          />
           <h2>Character Actions</h2>
           <FormControlLabel value='tax' control={<Radio />} label='Tax' />
           <FormControlLabel

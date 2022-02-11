@@ -10,9 +10,17 @@ import Typography from '@mui/material/Typography';
 
 export default function Player(props) {
   return (
-    <Card sx={{ whiteSpace: 'nowrap' }}>
+    <Card
+      sx={{
+        whiteSpace: 'nowrap',
+        bgcolor: props.isActiveUser && 'primary.main',
+      }}
+    >
       <Typography sx={{ fontSize: 18 }} color={props.color} gutterBottom>
         {props.userName}
+      </Typography>
+      <Typography sx={{ fontSize: 18 }} gutterBottom>
+        {props.coinCount}
       </Typography>
       <CardMedia
         sx={{
@@ -41,7 +49,7 @@ export default function Player(props) {
 }
 
 Player.defaultProps = {
-  coinCount: 0,
+  coinCount: null,
   cardTwo: null,
   cardOne: null,
   style: { height: '23.5vh' },

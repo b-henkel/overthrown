@@ -50,7 +50,7 @@ const ioHandler = (req, res) => {
         // socket.to(data.gameId).emit("state-update", updatedGameState);
       });
 
-      socket.on('useraction', (data) => {
+      socket.on('user-action', (data) => {
         // depending on the action type, call some function in game-state.js and pass the socket
         // so that it can re-emit the updated state
       });

@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import cache from 'memory-cache';
 import { deal } from './deck';
+import { getFirstPlayer, getNextPlayer } from './user-order';
+
 const globalGameState = loadGlobalGameState();
 
 function loadGlobalGameState() {
@@ -32,6 +34,7 @@ export const addUser = (socket, gameId, user) => {
   }
   console.log('adding user', user);
   gameObj.users[user.id] = {
+    id: user.id,
     name: user.name,
     coins: 2,
     color: '#FF0000',
@@ -55,6 +58,8 @@ export const startGame = (socket, gameId) => {
     user.cardOne = hand.cardOne;
     user.cardTwo = hand.cardTwo;
   });
+  const firstPlayer = getFirstPlayer(gameObj.users);
+  gameObj.currentPlayer = firstPlayer;
   cache.put('globalGameState', globalGameState);
   socket.emit('state-update', gameObj);
   socket.to(gameId).emit('state-update', gameObj);
@@ -68,6 +73,9 @@ export const removeUser = (socket) => {
     }
   });
 };
+
+export const performAction = (socket, gameId, action) => {};
+
 export const pushState = (socket, gameId) => {
   console.log('global gamestate', JSON.stringify(globalGameState));
   const gameObj = globalGameState[gameId];

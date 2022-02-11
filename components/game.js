@@ -65,6 +65,10 @@ export default function Game(props) {
             cardTwo={user ? cardBack : null}
             userName={user ? user.name : null}
             color={user ? user.color : null}
+            coinCount={user ? user.coins : null}
+            isActiveUser={
+              user ? props.gameState.currentPlayer === user.id : null
+            }
           />
         </Grid>
       );
@@ -103,12 +107,17 @@ export default function Game(props) {
             color={props.gameState.users[props.userId].color}
             cardOne={`/${props.gameState.users[props.userId].cardOne}.svg`}
             cardTwo={`/${props.gameState.users[props.userId].cardTwo}.svg`}
+            coinCount={props.gameState.users[props.userId].coins}
+            isActiveUser={props.gameState.currentPlayer === props.userId}
             // style={{ height: '47.5vh', width: '30vw' }}
           />
         </Grid>
         <Grid item xs={1}>
           {/* raction panel. lie indicator*/}
-          <Actions />
+          <Actions
+            socket={props.socket}
+            isActiveUser={props.gameState.currentPlayer === props.userId}
+          />
         </Grid>
       </Grid>
     </Box>

@@ -16,7 +16,7 @@ const bull = (
 
 export default function Log(props) {
   return (
-    <Card sx={{ minWidth: 275 }}>
+    <Card sx={{}}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
           Action Log
