@@ -3,44 +3,30 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import Button from '@mui/material/Button';
+import { Typography } from '@mui/material';
 
 export default function Actions(props) {
   const [value, setValue] = React.useState('');
-  const [error, setError] = React.useState(false);
-  const [helperText, setHelperText] = React.useState('Select an Action');
 
   const handleRadioChange = (event) => {
     setValue(event.target.value);
-    setHelperText(' ');
-    setError(false);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    if (value === 'best') {
-      setHelperText('You got it!');
-      setError(false);
-    } else if (value === 'worst') {
-      setHelperText('Sorry, wrong answer!');
-      setError(true);
-    } else {
-      setHelperText('Please select an option.');
-      setError(true);
+    if (value === 'income') {
+      props.socket.emit('user-action', {
+        gameId: props.gameId,
+        action: { type: 'income', target: null },
+      });
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl
-        sx={{ m: 3 }}
-        component='fieldset'
-        error={error}
-        variant='standard'
-      >
+      <FormControl sx={{ m: 3 }} component='fieldset' variant='standard'>
         <FormLabel component='legend'></FormLabel>
         <RadioGroup
           aria-label='action'
@@ -48,8 +34,16 @@ export default function Actions(props) {
           value={value}
           onChange={handleRadioChange}
         >
-          <h2>General Actions</h2>
-          <FormControlLabel value='Income' control={<Radio />} label='Income' />
+          <Typography sx={{ fontSize: 24 }} color='text.primary'>
+            General Actions
+          </Typography>
+
+          <FormControlLabel
+            value='income'
+            control={<Radio />}
+            label='Income'
+            disabled={!props.isActiveUser}
+          />
           <FormControlLabel
             value='foreignAid'
             control={<Radio />}
@@ -61,7 +55,10 @@ export default function Actions(props) {
             label='Overthrow'
             disabled
           />
-          <h2>Character Actions</h2>
+          <Typography sx={{ fontSize: 24 }} color='text.primary'>
+            Character Actions
+          </Typography>
+
           <FormControlLabel value='tax' control={<Radio />} label='Tax' />
           <FormControlLabel
             value='assasinate'
@@ -74,7 +71,10 @@ export default function Actions(props) {
             control={<Radio />}
             label='Exchange'
           />
-          <h2>Counter Actions</h2>
+          <Typography sx={{ fontSize: 24 }} color='text.primary'>
+            Counter Actions
+          </Typography>
+
           <FormControlLabel
             value='blockAssasination'
             control={<Radio />}
@@ -91,8 +91,13 @@ export default function Actions(props) {
             label='Block Foreign Aid'
           />
         </RadioGroup>
-        <FormHelperText>{helperText}</FormHelperText>
-        <Button sx={{ mt: 1, mr: 1 }} type='submit' variant='outlined'>
+
+        <Button
+          sx={{ mt: 1, mr: 1 }}
+          type='submit'
+          variant='outlined'
+          disabled={!props.isActiveUser}
+        >
           Submit
         </Button>
       </FormControl>

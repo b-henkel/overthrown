@@ -42,10 +42,8 @@ export const addUser = (socket, gameId, user) => {
     cardTwo: null,
     number: Object.keys(gameObj.users).length + 1,
   };
-  cache.put('globalGameState', globalGameState);
   console.log(JSON.stringify(gameObj));
-  socket.emit('state-update', gameObj);
-  socket.to(gameId).emit('state-update', gameObj);
+  pushCacheState(socket, gameId, gameObj);
 };
 
 export const startGame = (socket, gameId) => {
@@ -60,9 +58,7 @@ export const startGame = (socket, gameId) => {
   });
   const firstPlayer = getFirstPlayer(gameObj.users);
   gameObj.currentPlayer = firstPlayer;
-  cache.put('globalGameState', globalGameState);
-  socket.emit('state-update', gameObj);
-  socket.to(gameId).emit('state-update', gameObj);
+  pushCacheState(socket, gameId, gameObj);
 };
 
 export const removeUser = (socket) => {
@@ -74,10 +70,24 @@ export const removeUser = (socket) => {
   });
 };
 
-export const performAction = (socket, gameId, action) => {};
+export const performAction = (socket, gameId, action) => {
+  /* {type:"income", target:null} */
+  const gameObj = globalGameState[gameId];
+  if (action.type === 'income') {
+    gameObj.users[socket.id].coins += 1;
+    gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
+  }
+  pushCacheState(socket, gameId, gameObj);
+};
 
 export const pushState = (socket, gameId) => {
   console.log('global gamestate', JSON.stringify(globalGameState));
   const gameObj = globalGameState[gameId];
   socket.emit('state-update', gameObj);
+};
+
+const pushCacheState = (socket, gameId, gameObj) => {
+  cache.put('globalGameState', globalGameState);
+  socket.emit('state-update', gameObj);
+  socket.to(gameId).emit('state-update', gameObj);
 };

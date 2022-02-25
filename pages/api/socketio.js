@@ -5,6 +5,7 @@ import {
   startGame,
   removeUser,
   pushState,
+  performAction,
 } from '../../game/game-state';
 /*
 const gamestate = {
@@ -53,6 +54,7 @@ const ioHandler = (req, res) => {
       socket.on('user-action', (data) => {
         // depending on the action type, call some function in game-state.js and pass the socket
         // so that it can re-emit the updated state
+        performAction(socket, data.gameId, data.action);
       });
 
       socket.on('disconnect', () => {

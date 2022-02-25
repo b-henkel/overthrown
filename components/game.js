@@ -113,10 +113,13 @@ export default function Game(props) {
           />
         </Grid>
         <Grid item xs={1}>
-          {/* raction panel. lie indicator*/}
+          {/* action panel. lie indicator*/}
           <Actions
             socket={props.socket}
             isActiveUser={props.gameState.currentPlayer === props.userId}
+            cardOne={props.gameState.users[props.userId].cardOne}
+            cardTwo={props.gameState.users[props.userId].cardTwo}
+            gameId={props.gameState.id}
           />
         </Grid>
       </Grid>

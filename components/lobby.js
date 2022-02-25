@@ -2,6 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
+import styles from '../styles/Home.module.css';
 
 export default function Lobby(props) {
   const router = useRouter();
@@ -26,37 +27,47 @@ export default function Lobby(props) {
     }
   };
 
-  return (
-    <div>
-      <h2>HELLO THIS IS THE GAME</h2>
-      <h3>{router.query.id}</h3>
-      <p>
-        Cras facilisis urna ornare ex volutpat, et convallis erat elementum. Ut
-        aliquam, ipsum vitae gravida suscipit, metus dui bibendum est, eget
-        rhoncus nibh metus nec massa. Maecenas hendrerit laoreet augue nec
-        molestie. Cum sociis natoque penatibus et magnis dis parturient montes,
-        nascetur ridiculus mus.
-      </p>
+  const copyToClipboard = () => {};
 
-      <input
-        id='text_box'
-        type='text'
-        onChange={(e) => setUsername(e.target.value)}
-        value={username}
-      ></input>
-      <button onClick={addUser}>Fire</button>
-      <button onClick={startGame}>Start Game</button>
-      <p>Duis a turpis sed lacus dapibus elementum sed eu lectus.</p>
-      <List>
-        {props.gameState &&
-          Object.entries(props.gameState.users).map(([userID, userObj]) => {
-            return (
-              <ListItem>
-                <ListItemText primary={userObj.name} key={userID} />
-              </ListItem>
-            );
-          })}
-      </List>
+  return (
+    <div className={styles.container}>
+      <main className={styles.main}>
+        <h1 className={styles.title}>Welcome to the Lobby!</h1>
+        <h3>Your Game ID:</h3>
+        <h2>{router.query.id}</h2>
+        <button onClick={copyToClipboard}>Copy Link to Clipboard</button>
+
+        <div className={styles.grid}>
+          <button
+            onClick={startGame}
+            className={styles.card}
+            disabled={
+              props.gameState && Object.values(props.gameState.users).length < 2
+            }
+          >
+            <h2>Start Game &rarr;</h2>
+          </button>
+        </div>
+        <h3>Input a User Name: </h3>
+        <span>
+          <input
+            id='text_box'
+            type='text'
+            label='user name'
+            onChange={(e) => setUsername(e.target.value)}
+            value={username}
+          ></input>
+          <button onClick={addUser}>submit</button>
+        </span>
+
+        <h2>Players: </h2>
+        <List sx={{ fontSize: 24 }}>
+          {props.gameState &&
+            Object.entries(props.gameState.users).map(([userID, userObj]) => {
+              return <ListItem>&rarr; {userObj.name}</ListItem>;
+            })}
+        </List>
+      </main>
     </div>
   );
 }
