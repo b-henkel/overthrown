@@ -14,7 +14,8 @@ export default function Log(props) {
         </Typography>
         <Typography sx={{ fontSize: 18 }} color='text.secondary'>
           {/* {JSON.stringify(props.gameState)} */}
-          Game ID: {props.gameState.id}
+          Game ID: {props.gameState.id} Current player:{' '}
+          {props.gameState.currentPlayer}
           <ul>
             Users
             {usersArr.map((user) => {

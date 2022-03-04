@@ -33,15 +33,19 @@ export const addUser = (socket, gameId, user) => {
     // throw new Error("Somehow adding a user to a game that doesn't exist");
   }
   console.log('adding user', user);
-  gameObj.users[user.id] = {
-    id: user.id,
-    name: user.name,
-    coins: 2,
-    color: '#FF0000',
-    cardOne: null,
-    cardTwo: null,
-    number: Object.keys(gameObj.users).length + 1,
-  };
+  if (gameObj.users[user.id]) {
+    gameObj.users[user.id].name = user.name;
+  } else {
+    gameObj.users[user.id] = {
+      id: user.id,
+      name: user.name,
+      coins: 2,
+      color: '#FF0000',
+      cardOne: null,
+      cardTwo: null,
+      number: Object.keys(gameObj.users).length + 1,
+    };
+  }
   console.log(JSON.stringify(gameObj));
   pushCacheState(socket, gameId, gameObj);
 };
@@ -77,6 +81,11 @@ export const performAction = (socket, gameId, action) => {
     gameObj.users[socket.id].coins += 1;
     gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
   }
+  if (action.type === 'overThrow') {
+    gameObj.users[socket.id].coins -= 7;
+    // todo: remove opponent player card
+    gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
+  }
   pushCacheState(socket, gameId, gameObj);
 };
 
@@ -90,4 +99,5 @@ const pushCacheState = (socket, gameId, gameObj) => {
   cache.put('globalGameState', globalGameState);
   socket.emit('state-update', gameObj);
   socket.to(gameId).emit('state-update', gameObj);
+  console.log('game state: ', gameObj);
 };

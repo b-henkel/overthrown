@@ -120,6 +120,7 @@ export default function Game(props) {
             cardOne={props.gameState.users[props.userId].cardOne}
             cardTwo={props.gameState.users[props.userId].cardTwo}
             gameId={props.gameState.id}
+            coinCount={props.gameState.users[props.userId].coins}
           />
         </Grid>
       </Grid>

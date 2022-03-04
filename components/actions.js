@@ -22,6 +22,12 @@ export default function Actions(props) {
         action: { type: 'income', target: null },
       });
     }
+    if (value === 'overThrow') {
+      props.socket.emit('user-action', {
+        gameId: props.gameId,
+        action: { type: 'overThrow', target: null },
+      });
+    }
   };
 
   return (
@@ -42,7 +48,7 @@ export default function Actions(props) {
             value='income'
             control={<Radio />}
             label='Income'
-            disabled={!props.isActiveUser}
+            disabled={!props.isActiveUser || props.coinCount >= 10}
           />
           <FormControlLabel
             value='foreignAid'
@@ -50,10 +56,10 @@ export default function Actions(props) {
             label='Foreign Aid'
           />
           <FormControlLabel
-            value='Tax'
+            value='overThrow'
             control={<Radio />}
             label='Overthrow'
-            disabled
+            disabled={!props.isActiveUser || props.coinCount < 7}
           />
           <Typography sx={{ fontSize: 24 }} color='text.primary'>
             Character Actions
