@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardMedia } from '@mui/material';
 import Typography from '@mui/material/Typography';
-
+import Box from '@mui/material/Box';
 // TODO fix card spanning issue
 // Add coin count to component
 // Add statful card info
@@ -12,6 +12,7 @@ export default function Player(props) {
   return (
     <Card
       sx={{
+        height: '23.5vh',
         whiteSpace: 'nowrap',
         bgcolor: props.isActiveUser && 'primary.main',
       }}
@@ -22,28 +23,38 @@ export default function Player(props) {
       <Typography sx={{ fontSize: 18 }} gutterBottom>
         {props.coinCount}
       </Typography>
-      <CardMedia
+      <Box
         sx={{
-          ...props.style,
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          display: 'inline',
-          width: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          p: 1,
+          m: 1,
+          borderRadius: 1,
         }}
-        component='img'
-        image={props.cardOne}
-      />
-      <CardMedia
-        sx={{
-          ...props.style,
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          display: 'inline',
-          width: 'auto',
-        }}
-        component='img'
-        image={props.cardTwo}
-      />
+      >
+        <CardMedia
+          sx={{
+            ...props.style,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            display: 'inline',
+            width: 'auto',
+          }}
+          component='img'
+          image={props.cardOne}
+        />
+        <CardMedia
+          sx={{
+            ...props.style,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            display: 'inline',
+            width: 'auto',
+          }}
+          component='img'
+          image={props.cardTwo}
+        />
+      </Box>
     </Card>
   );
 }

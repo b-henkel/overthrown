@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
 import styles from '../styles/Home.module.css';
+import copy from 'copy-to-clipboard';
 
 export default function Lobby(props) {
   const router = useRouter();
@@ -27,7 +28,9 @@ export default function Lobby(props) {
     }
   };
 
-  const copyToClipboard = () => {};
+  const copyToClipboard = () => {
+    copy(`http://localhost:3000/game/${router.query.id}`);
+  };
 
   return (
     <div className={styles.container}>

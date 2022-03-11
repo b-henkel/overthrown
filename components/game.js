@@ -8,6 +8,7 @@ import { Container } from '@mui/material';
 import Log from './log';
 import Actions from './actions';
 import { cardBack } from '../constants/cards';
+import Banker from './banker';
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -54,7 +55,19 @@ export default function Game(props) {
       finalUserArr = finalUserArr.concat(usersArr.slice(0, yourUserPos));
     }
     console.log('finalUserArr:', JSON.stringify(finalUserArr));
-    const gridItems = encoding.map((isPlayer) => {
+    const gridItems = encoding.map((isPlayer, index) => {
+      if (index === 4) {
+        return (
+          <Grid item xs={1}>
+            <Banker
+              currentPlayer={
+                props.gameState.users[props.gameState.currentPlayer].name
+              }
+              currentPhase={'playing the game'}
+            />
+          </Grid>
+        );
+      }
       const user = isPlayer ? finalUserArr[isPlayer] : null;
       console.log('user:', user);
 
