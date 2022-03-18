@@ -5,37 +5,70 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import { Typography } from '@mui/material';
-import { Card } from '@mui/material';
+import { Card, Box } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 
 export default function Actions(props) {
-  const [value, setValue] = React.useState('');
+  // const [value, setValue] = React.useState('');
 
-  const handleRadioChange = (event) => {
-    setValue(event.target.value);
-  };
+  // const handleRadioChange = (event) => {
+  //   setValue(event.target.value);
+  // };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleClick = (value) => {
+    // event.preventDefault();
     if (value === 'income') {
       props.socket.emit('user-action', {
         gameId: props.gameId,
         action: { type: 'income', target: null },
       });
     }
-    if (value === 'overThrow') {
-      props.socket.emit('user-action', {
-        gameId: props.gameId,
-        action: { type: 'overThrow', target: null },
-      });
-    }
   };
 
   return (
-    <Card sx={{ height: '32.5vh' }}>
+    <Card sx={{}}>
       <CardContent>
-        <form onSubmit={handleSubmit}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            '& > *': {
+              m: 1,
+            },
+          }}
+        >
+          <Typography sx={{ fontSize: 18 }} color='text.primary'>
+            General Actions
+          </Typography>
+          <ButtonGroup variant='text' aria-label='text button group'>
+            <Button
+              onClick={() => handleClick('income')}
+              disabled={!props.isActiveUser || props.coinCount >= 10}
+            >
+              Income
+            </Button>
+            <Button>Foreign Aid</Button>
+            <Button
+              onClick={() => props.targetOtherPlayers('overThrow')}
+              disabled={!props.isActiveUser || props.coinCount < 7}
+            >
+              Overthrow
+            </Button>
+          </ButtonGroup>
+          <Typography sx={{ fontSize: 18 }} color='text.primary'>
+            Character Actions
+          </Typography>
+          <ButtonGroup variant='text' aria-label='text button group'>
+            <Button>Tax</Button>
+            <Button>Assasinate</Button>
+            <Button>Steal</Button>
+            <Button>Exchange</Button>
+          </ButtonGroup>
+        </Box>
+        {/* <form onSubmit={handleSubmit}>
           <FormControl sx={{ m: 3 }} component='fieldset' variant='standard'>
             <FormLabel component='legend'></FormLabel>
             <RadioGroup
@@ -44,10 +77,6 @@ export default function Actions(props) {
               value={value}
               onChange={handleRadioChange}
             >
-              <Typography sx={{ fontSize: 24 }} color='text.primary'>
-                General Actions
-              </Typography>
-
               <FormControlLabel
                 value='income'
                 control={<Radio />}
@@ -65,9 +94,6 @@ export default function Actions(props) {
                 label='Overthrow'
                 disabled={!props.isActiveUser || props.coinCount < 7}
               />
-              <Typography sx={{ fontSize: 24 }} color='text.primary'>
-                Character Actions
-              </Typography>
 
               <FormControlLabel value='tax' control={<Radio />} label='Tax' />
               <FormControlLabel
@@ -115,7 +141,7 @@ export default function Actions(props) {
               Submit
             </Button>
           </FormControl>
-        </form>
+        </form> */}
       </CardContent>
     </Card>
   );

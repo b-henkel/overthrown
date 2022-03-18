@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card, CardMedia } from '@mui/material';
+import { Button, Card, CardMedia } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+
 // TODO fix card spanning issue
 // Add coin count to component
 // Add statful card info
@@ -9,6 +10,17 @@ import Box from '@mui/material/Box';
 // Add animation card reveal and discard animation
 
 export default function Player(props) {
+  const handleClick = (value, targetPlayer) => {
+    console.log('target player value', targetPlayer, value);
+    // event.preventDefault();
+    if (value === 'overThrow') {
+      props.socket.emit('user-action', {
+        gameId: props.gameId,
+        action: { type: 'overThrow', target: targetPlayer },
+      });
+    }
+  };
+
   return (
     <Card
       sx={{
@@ -20,6 +32,11 @@ export default function Player(props) {
       <Typography sx={{ fontSize: 18 }} color={props.color} gutterBottom>
         {props.userName}
       </Typography>
+      {props.action && (
+        <Button onClick={() => handleClick(props.action, props.userId)}>
+          {props.action}
+        </Button>
+      )}
       <Typography sx={{ fontSize: 18 }} gutterBottom>
         {props.coinCount}
       </Typography>
@@ -32,28 +49,32 @@ export default function Player(props) {
           borderRadius: 1,
         }}
       >
-        <CardMedia
-          sx={{
-            ...props.style,
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            display: 'inline',
-            width: 'auto',
-          }}
-          component='img'
-          image={props.cardOne}
-        />
-        <CardMedia
-          sx={{
-            ...props.style,
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            display: 'inline',
-            width: 'auto',
-          }}
-          component='img'
-          image={props.cardTwo}
-        />
+        {props.cardOne && (
+          <CardMedia
+            sx={{
+              ...props.style,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              display: 'inline',
+              width: 'auto',
+            }}
+            component='img'
+            image={props.cardOne}
+          />
+        )}
+        {props.cardTwo && (
+          <CardMedia
+            sx={{
+              ...props.style,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              display: 'inline',
+              width: 'auto',
+            }}
+            component='img'
+            image={props.cardTwo}
+          />
+        )}
       </Box>
     </Card>
   );

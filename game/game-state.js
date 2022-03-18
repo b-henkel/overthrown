@@ -83,7 +83,13 @@ export const performAction = (socket, gameId, action) => {
   }
   if (action.type === 'overThrow') {
     gameObj.users[socket.id].coins -= 7;
-    // todo: remove opponent player card
+    // todo: remove opponent player when no more cards are available
+    const targetUser = gameObj.users[action.target];
+    if (targetUser.cardOne) {
+      targetUser.cardOne = null;
+    } else {
+      targetUser.cardTwo = null;
+    }
     gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
   }
   pushCacheState(socket, gameId, gameObj);

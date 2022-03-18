@@ -4,12 +4,11 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Player from './player';
-import { Container } from '@mui/material';
 import Log from './log';
 import Actions from './actions';
 import { cardBack } from '../constants/cards';
 import Banker from './banker';
-
+import { useState } from 'react';
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -18,6 +17,15 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Game(props) {
+  const [targetedAction, setTargetedAction] = useState(null);
+  React.useEffect(() => {
+    setTargetedAction(null);
+  }, [props.gameState]);
+
+  const targetOtherPlayers = (action) => {
+    setTargetedAction(action);
+  };
+
   const setUpOtherPlayers = () => {
     const playerCount = Object.keys(props.gameState.users).length - 1;
     let encoding;
@@ -74,41 +82,28 @@ export default function Game(props) {
       return (
         <Grid item xs={1}>
           <Player
-            cardOne={user ? cardBack : null}
-            cardTwo={user ? cardBack : null}
+            socket={props.socket}
+            cardOne={user && user.cardOne ? cardBack : null}
+            cardTwo={user && user.cardTwo ? cardBack : null}
             userName={user ? user.name : null}
+            userId={user ? user.id : null}
             color={user ? user.color : null}
             coinCount={user ? user.coins : null}
             isActiveUser={
               user ? props.gameState.currentPlayer === user.id : null
             }
+            action={user ? targetedAction : null}
+            gameId={props.gameState.id}
           />
         </Grid>
       );
     });
     return gridItems;
   };
+  const currentUser = props.gameState.users[props.userId];
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2} columns={3} justifyContent={'center'}>
-        {/* <Grid item xs={1}>
-          <Player />
-        </Grid>
-        <Grid item xs={1}>
-          <Player />
-        </Grid>
-        <Grid item xs={1}>
-          <Player />
-        </Grid>
-        <Grid item xs={1}>
-          <Player />
-        </Grid>
-        <Grid item xs={1}>          
-        </Grid>
-        <Grid item xs={1}>
-          <Player />
-        </Grid> 
-        */}
         {setUpOtherPlayers()}
         <Grid item xs={1}>
           {/* chat/ log */}
@@ -116,11 +111,11 @@ export default function Game(props) {
         </Grid>
         <Grid item xs={1}>
           <Player
-            userName={props.gameState.users[props.userId].name}
-            color={props.gameState.users[props.userId].color}
-            cardOne={`/${props.gameState.users[props.userId].cardOne}.svg`}
-            cardTwo={`/${props.gameState.users[props.userId].cardTwo}.svg`}
-            coinCount={props.gameState.users[props.userId].coins}
+            userName={currentUser.name}
+            color={currentUser.color}
+            cardOne={currentUser.cardOne && `/${currentUser.cardOne}.svg`}
+            cardTwo={currentUser.cardTwo && `/${currentUser.cardTwo}.svg`}
+            coinCount={currentUser.coins}
             isActiveUser={props.gameState.currentPlayer === props.userId}
             // style={{ height: '47.5vh', width: '30vw' }}
           />
@@ -130,10 +125,11 @@ export default function Game(props) {
           <Actions
             socket={props.socket}
             isActiveUser={props.gameState.currentPlayer === props.userId}
-            cardOne={props.gameState.users[props.userId].cardOne}
-            cardTwo={props.gameState.users[props.userId].cardTwo}
+            cardOne={currentUser.cardOne}
+            cardTwo={currentUser.cardTwo}
             gameId={props.gameState.id}
-            coinCount={props.gameState.users[props.userId].coins}
+            coinCount={currentUser.coins}
+            targetOtherPlayers={targetOtherPlayers}
           />
         </Grid>
       </Grid>

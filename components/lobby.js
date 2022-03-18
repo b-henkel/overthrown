@@ -1,8 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
-import { List, ListItem, ListItemText } from '@mui/material';
-import styles from '../styles/Home.module.css';
+import { useState } from 'react';
+import { List, ListItem, Box } from '@mui/material';
+
 import copy from 'copy-to-clipboard';
 
 export default function Lobby(props) {
@@ -33,44 +33,47 @@ export default function Lobby(props) {
   };
 
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>Welcome to the Lobby!</h1>
-        <h3>Your Game ID:</h3>
-        <h2>{router.query.id}</h2>
-        <button onClick={copyToClipboard}>Copy Link to Clipboard</button>
+    <Box
+      sx={{
+        display: 'block',
+        textAlign: 'center',
+      }}
+    >
+      <Box component='img' sx={{}} alt='characters' src='../splash.svg' />
+      <h1>Welcome to the Lobby!</h1>
+      <h3>Your Game ID:</h3>
+      <h2>{router.query.id}</h2>
+      <button onClick={copyToClipboard}>Copy Link to Clipboard</button>
 
-        <div className={styles.grid}>
-          <button
-            onClick={startGame}
-            className={styles.card}
-            disabled={
-              props.gameState && Object.values(props.gameState.users).length < 2
-            }
-          >
-            <h2>Start Game &rarr;</h2>
-          </button>
-        </div>
-        <h3>Input a User Name: </h3>
-        <span>
-          <input
-            id='text_box'
-            type='text'
-            label='user name'
-            onChange={(e) => setUsername(e.target.value)}
-            value={username}
-          ></input>
-          <button onClick={addUser}>submit</button>
-        </span>
+      <h3>Input a User Name: </h3>
+      <span>
+        <input
+          id='text_box'
+          type='text'
+          label='user name'
+          onChange={(e) => setUsername(e.target.value)}
+          value={username}
+        ></input>
+        <button onClick={addUser}>submit</button>
+      </span>
 
-        <h2>Players: </h2>
-        <List sx={{ fontSize: 24 }}>
-          {props.gameState &&
-            Object.entries(props.gameState.users).map(([userID, userObj]) => {
-              return <ListItem>&rarr; {userObj.name}</ListItem>;
-            })}
-        </List>
-      </main>
-    </div>
+      <h2>Players: </h2>
+      <List sx={{ fontSize: 24 }}>
+        {props.gameState &&
+          Object.entries(props.gameState.users).map(([userID, userObj]) => {
+            return <ListItem>&rarr; {userObj.name}</ListItem>;
+          })}
+      </List>
+      <div>
+        <button
+          onClick={startGame}
+          disabled={
+            props.gameState && Object.values(props.gameState.users).length < 2
+          }
+        >
+          <h2>Start Game &rarr;</h2>
+        </button>
+      </div>
+    </Box>
   );
 }
