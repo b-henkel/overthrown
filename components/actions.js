@@ -9,6 +9,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import { Typography } from '@mui/material';
 import { Card, Box } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
+import Avatar from '@mui/material/Avatar';
 
 export default function Actions(props) {
   // const [value, setValue] = React.useState('');
@@ -45,13 +46,17 @@ export default function Actions(props) {
           </Typography>
           <ButtonGroup variant='text' aria-label='text button group'>
             <Button
+              startIcon={<Avatar src='/banker-icon.svg' />}
               onClick={() => handleClick('income')}
               disabled={!props.isActiveUser || props.coinCount >= 10}
             >
               Income
             </Button>
-            <Button>Foreign Aid</Button>
+            <Button startIcon={<Avatar src='/banker-icon.svg' />}>
+              Foreign Aid
+            </Button>
             <Button
+              startIcon={<Avatar src='/assassin-icon.svg' />}
               onClick={() => props.targetOtherPlayers('overThrow')}
               disabled={!props.isActiveUser || props.coinCount < 7}
             >
@@ -62,10 +67,16 @@ export default function Actions(props) {
             Character Actions
           </Typography>
           <ButtonGroup variant='text' aria-label='text button group'>
-            <Button>Tax</Button>
-            <Button>Assasinate</Button>
-            <Button>Steal</Button>
-            <Button>Exchange</Button>
+            <Button startIcon={<Avatar src='/duke-icon.svg' />}>Tax</Button>
+            <Button startIcon={<Avatar src='/assassin-icon.svg' />}>
+              Assasinate
+            </Button>
+            <Button startIcon={<Avatar src='/captain-icon.svg' />}>
+              Steal
+            </Button>
+            <Button startIcon={<Avatar src='/ambassador-icon.svg' />}>
+              Exchange
+            </Button>
           </ButtonGroup>
         </Box>
         {/* <form onSubmit={handleSubmit}>

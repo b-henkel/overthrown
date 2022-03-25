@@ -62,6 +62,7 @@ export const startGame = (socket, gameId) => {
   });
   const firstPlayer = getFirstPlayer(gameObj.users);
   gameObj.currentPlayer = firstPlayer;
+  resetActivity(gameObj);
   pushCacheState(socket, gameId, gameObj);
 };
 
@@ -74,12 +75,34 @@ export const removeUser = (socket) => {
   });
 };
 
+const resetActivity = (gameObj) => {
+  gameObj.activity = {
+    phase: 'action',
+    action: null,
+    actionTarget: null,
+    actionChallenger: null,
+    counteractor: null,
+    counteractionChallenger: null,
+    passingUsers: [],
+  };
+};
+
 export const performAction = (socket, gameId, action) => {
   /* {type:"income", target:null} */
   const gameObj = globalGameState[gameId];
   if (action.type === 'income') {
     gameObj.users[socket.id].coins += 1;
     gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
+    resetActivity(gameObj);
+  }
+  if (action.type === 'foreignAid') {
+    if (gameObj.activity.phase === 'action') {
+      gameObj.activity.phase = 'counterAction';
+    } else if (gameObj.activity.phase === 'counterAction') {
+      gameObj.activity.phase = 'challengeCounterAction';
+    } else if (gameObj.activity.phase === 'challengeCounterAction') {
+    }
+    gameObj.users[socket.id].coins += 2;
   }
   if (action.type === 'overThrow') {
     gameObj.users[socket.id].coins -= 7;
@@ -91,9 +114,14 @@ export const performAction = (socket, gameId, action) => {
       targetUser.cardTwo = null;
     }
     gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
+    resetActivity(gameObj);
   }
   pushCacheState(socket, gameId, gameObj);
 };
+
+export const performChallengeAction = () => {};
+export const performCounterAction = () => {};
+export const performChallengeCounterAction = () => {};
 
 export const pushState = (socket, gameId) => {
   console.log('global gamestate', JSON.stringify(globalGameState));

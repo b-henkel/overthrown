@@ -6,6 +6,9 @@ import {
   removeUser,
   pushState,
   performAction,
+  performChallengeAction,
+  performCounterAction,
+  performChallengeCounterAction,
 } from '../../game/game-state';
 /*
 const gamestate = {
@@ -55,6 +58,19 @@ const ioHandler = (req, res) => {
         // depending on the action type, call some function in game-state.js and pass the socket
         // so that it can re-emit the updated state
         performAction(socket, data.gameId, data.action);
+      });
+
+      socket.on('challenge-action', (data) => {
+        //
+        performChallengeAction(socket, data.gameId, data.action);
+      });
+
+      socket.on('counter-action', (data) => {
+        performCounterAction(socket, data.gameId, data.action);
+      });
+
+      socket.on('challenge-counter-action', (data) => {
+        performChallengeCounterAction(socket, data.gameId, data.action);
       });
 
       socket.on('disconnect', () => {
