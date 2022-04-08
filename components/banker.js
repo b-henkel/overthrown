@@ -5,11 +5,7 @@ import Box from '@mui/material/Box';
 
 export default function Banker(props) {
   return (
-    <Card
-      sx={{
-        whiteSpace: 'nowrap',
-      }}
-    >
+    <Card sx={{ height: '32vh', whiteSpace: 'nowrap' }}>
       <div
         style={{
           position: 'relative',
@@ -24,8 +20,11 @@ export default function Banker(props) {
           <CardMedia
             sx={{
               ...props.style,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              display: 'inline',
               width: 'auto',
-              height: '23.5vh',
+              height: '32vh',
             }}
             component='img'
             image='/banker.svg'

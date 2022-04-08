@@ -81,13 +81,14 @@ const resetActivity = (gameObj) => {
     action: null,
     actionTarget: null,
     actionChallenger: null,
-    counteractor: null,
+    counterActor: null,
+    counterActorCard: null,
     counteractionChallenger: null,
     passingUsers: [],
   };
 };
 
-export const performAction = (socket, gameId, action) => {
+export const handleAction = (socket, gameId, action) => {
   /* {type:"income", target:null} */
   const gameObj = globalGameState[gameId];
   if (action.type === 'income') {
@@ -98,11 +99,7 @@ export const performAction = (socket, gameId, action) => {
   if (action.type === 'foreignAid') {
     if (gameObj.activity.phase === 'action') {
       gameObj.activity.phase = 'counterAction';
-    } else if (gameObj.activity.phase === 'counterAction') {
-      gameObj.activity.phase = 'challengeCounterAction';
-    } else if (gameObj.activity.phase === 'challengeCounterAction') {
     }
-    gameObj.users[socket.id].coins += 2;
   }
   if (action.type === 'overThrow') {
     gameObj.users[socket.id].coins -= 7;
@@ -119,9 +116,30 @@ export const performAction = (socket, gameId, action) => {
   pushCacheState(socket, gameId, gameObj);
 };
 
-export const performChallengeAction = () => {};
-export const performCounterAction = () => {};
-export const performChallengeCounterAction = () => {};
+export const resolveAction = (socket, gameId, action) => {};
+export const handleChallengeAction = (socket, gameId, action) => {};
+export const resolveChallengeAction = (socket, gameId, action) => {};
+export const handleCounterAction = (socket, gameId, action) => {
+  const gameObj = globalGameState[gameId];
+  if (action.type === 'foreignAid') {
+    if (action.counterAction === 'block') {
+      gameObj.activity.counterActor = socket.id;
+      gameObj.activity.counterActorCard = action.counterActionCard;
+      gameObj.activity.phase = 'challengeCounterAction';
+    } else {
+      gameObj.activity.passingUsers.push(socket.id);
+      if (
+        gameObj.activity.passingUsers.length ===
+        Object.keys(gameObj.users).length
+      ) {
+        gameObj.activity.phase = 'resolveAction';
+      }
+    }
+  }
+};
+export const resolveCounterAction = (socket, gameId, action) => {};
+export const handleChallengeCounterAction = (socket, gameId, action) => {};
+export const resolveChallengeCounterAction = (socket, gameId, action) => {};
 
 export const pushState = (socket, gameId) => {
   console.log('global gamestate', JSON.stringify(globalGameState));

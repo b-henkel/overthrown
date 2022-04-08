@@ -29,7 +29,7 @@ export default function Actions(props) {
   };
 
   return (
-    <Card sx={{}}>
+    <Card sx={{ height: '32vh' }}>
       <CardContent>
         <Box
           sx={{
@@ -46,16 +46,21 @@ export default function Actions(props) {
           </Typography>
           <ButtonGroup variant='text' aria-label='text button group'>
             <Button
+              variant='outlined'
               startIcon={<Avatar src='/banker-icon.svg' />}
               onClick={() => handleClick('income')}
               disabled={!props.isActiveUser || props.coinCount >= 10}
             >
               Income
             </Button>
-            <Button startIcon={<Avatar src='/banker-icon.svg' />}>
+            <Button
+              variant='outlined'
+              startIcon={<Avatar src='/aid-icon.svg' />}
+            >
               Foreign Aid
             </Button>
             <Button
+              variant='outlined'
               startIcon={<Avatar src='/assassin-icon.svg' />}
               onClick={() => props.targetOtherPlayers('overThrow')}
               disabled={!props.isActiveUser || props.coinCount < 7}
@@ -67,14 +72,30 @@ export default function Actions(props) {
             Character Actions
           </Typography>
           <ButtonGroup variant='text' aria-label='text button group'>
-            <Button startIcon={<Avatar src='/duke-icon.svg' />}>Tax</Button>
-            <Button startIcon={<Avatar src='/assassin-icon.svg' />}>
+            <Button
+              variant='outlined'
+              startIcon={<Avatar src='/duke-icon.svg' />}
+            >
+              Tax
+            </Button>
+            <Button
+              variant='outlined'
+              startIcon={<Avatar src='/assassin-icon.svg' />}
+            >
               Assasinate
             </Button>
-            <Button startIcon={<Avatar src='/captain-icon.svg' />}>
+          </ButtonGroup>
+          <ButtonGroup variant='text' aria-label='text button group'>
+            <Button
+              variant='outlined'
+              startIcon={<Avatar src='/captain-icon.svg' />}
+            >
               Steal
             </Button>
-            <Button startIcon={<Avatar src='/ambassador-icon.svg' />}>
+            <Button
+              variant='outlined'
+              startIcon={<Avatar src='/ambassador-icon.svg' />}
+            >
               Exchange
             </Button>
           </ButtonGroup>

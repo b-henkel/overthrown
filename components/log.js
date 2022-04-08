@@ -8,12 +8,12 @@ export default function Log(props) {
   const usersArr = Object.keys(props.gameState.users);
   console.log('userArr', usersArr);
   return (
-    <Card sx={{ height: '32.5vh' }}>
+    <Card sx={{ height: '32vh' }}>
       <CardContent>
         <Typography sx={{ fontSize: 24 }} color='text.primary'>
           Action Log
         </Typography>
-        <Paper style={{ maxHeight: 200, overflow: 'auto' }}>
+        <Paper style={{ maxHeight: 360, overflow: 'auto' }}>
           <Typography sx={{ fontSize: 18 }} color='text.secondary'>
             {/* {JSON.stringify(props.gameState)} */}
             Game ID: {props.gameState.id} Current player:{' '}

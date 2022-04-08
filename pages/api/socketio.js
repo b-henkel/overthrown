@@ -57,20 +57,20 @@ const ioHandler = (req, res) => {
       socket.on('user-action', (data) => {
         // depending on the action type, call some function in game-state.js and pass the socket
         // so that it can re-emit the updated state
-        performAction(socket, data.gameId, data.action);
+        handleAction(socket, data.gameId, data.action);
       });
 
       socket.on('challenge-action', (data) => {
         //
-        performChallengeAction(socket, data.gameId, data.action);
+        handleChallengeAction(socket, data.gameId, data.action);
       });
 
       socket.on('counter-action', (data) => {
-        performCounterAction(socket, data.gameId, data.action);
+        handleCounterAction(socket, data.gameId, data.action);
       });
 
       socket.on('challenge-counter-action', (data) => {
-        performChallengeCounterAction(socket, data.gameId, data.action);
+        handleChallengeCounterAction(socket, data.gameId, data.action);
       });
 
       socket.on('disconnect', () => {

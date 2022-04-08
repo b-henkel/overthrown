@@ -1,9 +1,19 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { List, ListItem, Box } from '@mui/material';
+import {
+  List,
+  ListItem,
+  Box,
+  Button,
+  Typography,
+  TextField,
+  Paper,
+  InputBase,
+} from '@mui/material';
 
 import copy from 'copy-to-clipboard';
+import { textAlign } from '@mui/system';
 
 export default function Lobby(props) {
   const router = useRouter();
@@ -36,44 +46,64 @@ export default function Lobby(props) {
     <Box
       sx={{
         display: 'block',
+        margin: 'auto',
         textAlign: 'center',
       }}
     >
       <Box component='img' sx={{}} alt='characters' src='../splash.svg' />
-      <h1>Welcome to the Lobby!</h1>
-      <h3>Your Game ID:</h3>
-      <h2>{router.query.id}</h2>
-      <button onClick={copyToClipboard}>Copy Link to Clipboard</button>
-
-      <h3>Input a User Name: </h3>
-      <span>
-        <input
+      <Typography variant='h2'>Welcome to the Lobby!</Typography>
+      <Typography variant='h4'>Your Game ID:</Typography>
+      <Typography variant='h6'>{router.query.id}</Typography>
+      <Button variant='outlined' onClick={copyToClipboard}>
+        Copy Link to Clipboard
+      </Button>
+      {/* <Paper
+        component='form'
+        sx={{
+          alignItems: 'center',
+          p: '2px 4px',
+          display: 'flex',
+          alignItems: 'center',
+          width: 300,
+        }}
+      > */}
+      <div>
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
+          required
           id='text_box'
-          type='text'
-          label='user name'
+          placeholder='Input a User Name'
           onChange={(e) => setUsername(e.target.value)}
           value={username}
-        ></input>
-        <button onClick={addUser}>submit</button>
-      </span>
-
-      <h2>Players: </h2>
-      <List sx={{ fontSize: 24 }}>
+        />
+        <Button variant='outlined' onClick={addUser}>
+          submit
+        </Button>
+      </div>
+      {/* </Paper> */}
+      <Typography variant='h5'>Players: </Typography>
+      <List
+        sx={{
+          fontSize: 24,
+          margin: 'auto',
+          maxWidth: 600,
+        }}
+      >
         {props.gameState &&
           Object.entries(props.gameState.users).map(([userID, userObj]) => {
             return <ListItem>&rarr; {userObj.name}</ListItem>;
           })}
       </List>
-      <div>
-        <button
-          onClick={startGame}
-          disabled={
-            props.gameState && Object.values(props.gameState.users).length < 2
-          }
-        >
-          <h2>Start Game &rarr;</h2>
-        </button>
-      </div>
+      <Button
+        variant='contained'
+        color='error'
+        onClick={startGame}
+        disabled={
+          props.gameState && Object.values(props.gameState.users).length < 2
+        }
+      >
+        Start Game &rarr;
+      </Button>
     </Box>
   );
 }

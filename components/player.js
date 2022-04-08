@@ -24,7 +24,7 @@ export default function Player(props) {
   return (
     <Card
       sx={{
-        height: '23.5vh',
+        height: '32vh',
         whiteSpace: 'nowrap',
         bgcolor: props.isActiveUser && 'primary.main',
       }}
@@ -33,7 +33,11 @@ export default function Player(props) {
         {props.userName}
       </Typography>
       {props.action && (
-        <Button onClick={() => handleClick(props.action, props.userId)}>
+        <Button
+          color='error'
+          variant='contained'
+          onClick={() => handleClick(props.action, props.userId)}
+        >
           {props.action}
         </Button>
       )}
@@ -55,8 +59,9 @@ export default function Player(props) {
               ...props.style,
               marginLeft: 'auto',
               marginRight: 'auto',
-              display: 'inline',
+              display: 'flex',
               width: 'auto',
+              height: '25vh',
             }}
             component='img'
             image={props.cardOne}
@@ -68,8 +73,9 @@ export default function Player(props) {
               ...props.style,
               marginLeft: 'auto',
               marginRight: 'auto',
-              display: 'inline',
+              display: 'flex',
               width: 'auto',
+              height: '25vh',
             }}
             component='img'
             image={props.cardTwo}
@@ -84,5 +90,5 @@ Player.defaultProps = {
   coinCount: null,
   cardTwo: null,
   cardOne: null,
-  style: { height: '23.5vh' },
+  style: { height: '32vh' },
 };
