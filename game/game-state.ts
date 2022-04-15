@@ -2,8 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import cache from 'memory-cache';
 import { deal } from './deck';
 import { getFirstPlayer, getNextPlayer } from './user-order';
+import { GlobalGameState, GameObject, User } from './types/game-types';
 
-const globalGameState = loadGlobalGameState();
+const globalGameState: GlobalGameState = loadGlobalGameState();
 
 function loadGlobalGameState() {
   const state = cache.get('globalGameState');
@@ -19,13 +20,20 @@ export const initGameState = (gameIdOverride = null) => {
   // Create, store, and return a new specific state object
   const gameId = gameIdOverride || uuidv4();
   console.log(`New Game Initialized ${gameId}`);
-  const newGameState = { id: gameId, users: {} };
+  const newGameState: GameObject = {
+    id: gameId,
+    users: {},
+    activity: null,
+    started: false,
+    deck: [],
+    currentPlayer: null,
+  };
   globalGameState[gameId] = newGameState;
   cache.put('globalGameState', globalGameState);
   return newGameState;
 };
 
-export const addUser = (socket, gameId, user) => {
+export const addUser = (socket, gameId, user: User) => {
   let gameObj = globalGameState[gameId];
   if (!gameObj) {
     // TODO This is not actually acceptable long term but OK for dev

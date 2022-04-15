@@ -1,24 +1,15 @@
 import { Server } from 'socket.io';
 import {
-  initGameState,
   addUser,
   startGame,
   removeUser,
   pushState,
-  performAction,
-  performChallengeAction,
-  performCounterAction,
-  performChallengeCounterAction,
+  handleAction,
+  handleChallengeAction,
+  handleCounterAction,
+  handleChallengeCounterAction,
 } from '../../game/game-state';
-/*
-const gamestate = {
-    "893983" : {
-        "players": [],
-        "current_action": ""
-        ...
-    }
-}
-*/
+
 const ioHandler = (req, res) => {
   if (!res.socket.server.io) {
     console.log('*First use, starting socket.io');
@@ -26,10 +17,6 @@ const ioHandler = (req, res) => {
     const io = new Server(res.socket.server);
 
     io.on('connection', (socket) => {
-      // socket.emit('a user connected');
-      // socket.on('hello', (msg) => {
-      //   socket.emit('hello', 'world!');
-      // });
       socket.on('join', (gameId) => {
         console.log(`Socket ${socket.id} joining ${gameId}`);
         socket.join(gameId);
