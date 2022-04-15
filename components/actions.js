@@ -20,12 +20,11 @@ export default function Actions(props) {
 
   const handleClick = (value) => {
     // event.preventDefault();
-    if (value === 'income') {
-      props.socket.emit('user-action', {
-        gameId: props.gameId,
-        action: { type: 'income', target: null },
-      });
-    }
+
+    props.socket.emit('action', {
+      gameId: props.gameId,
+      action: { type: value, target: null },
+    });
   };
 
   return (
@@ -56,6 +55,7 @@ export default function Actions(props) {
             <Button
               variant='outlined'
               startIcon={<Avatar src='/aid-icon.svg' />}
+              onClick={() => handleClick('foreignAid')}
             >
               Foreign Aid
             </Button>

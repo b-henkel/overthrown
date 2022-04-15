@@ -72,7 +72,7 @@ export default function Game(props) {
               currentPlayer={
                 props.gameState.users[props.gameState.currentPlayer].name
               }
-              currentPhase={'playing the game'}
+              currentPhase={props.gameState.activity.phase}
             />
           </Grid>
         );
@@ -93,7 +93,10 @@ export default function Game(props) {
             isActiveUser={
               user ? props.gameState.currentPlayer === user.id : null
             }
-            action={user ? targetedAction : null}
+            action={
+              user ? targetedAction || props.gameState.activity.action : null
+            }
+            phase={user ? props.gameState.activity.phase : null}
             gameId={props.gameState.id}
           />
         </Grid>

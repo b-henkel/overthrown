@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import cache from 'memory-cache';
 import { deal } from './deck';
 import { getFirstPlayer, getNextPlayer } from './user-order';
-import { GlobalGameState, GameObject, User } from './types/game-types';
+import { GlobalGameState, GameObject, User, Action } from './types/game-types';
 
 const globalGameState: GlobalGameState = loadGlobalGameState();
 
@@ -96,9 +96,11 @@ const resetActivity = (gameObj) => {
   };
 };
 
-export const handleAction = (socket, gameId, action) => {
+export const handleAction = (socket, gameId, action: Action) => {
+  console.log('recieved action: ', action);
   /* {type:"income", target:null} */
   const gameObj = globalGameState[gameId];
+  gameObj.activity.action = action.type;
   if (action.type === 'income') {
     gameObj.users[socket.id].coins += 1;
     gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
@@ -124,23 +126,39 @@ export const handleAction = (socket, gameId, action) => {
   pushCacheState(socket, gameId, gameObj);
 };
 
-export const resolveAction = (socket, gameId, action) => {};
-export const handleChallengeAction = (socket, gameId, action) => {};
-export const resolveChallengeAction = (socket, gameId, action) => {};
-export const handleCounterAction = (socket, gameId, action) => {
+export const resolveAction = (socket, gameId, action: Action) => {
   const gameObj = globalGameState[gameId];
   if (action.type === 'foreignAid') {
-    if (action.counterAction === 'block') {
+    gameObj.users[gameObj.currentPlayer].coins += 2;
+  }
+  resetActivity(gameObj);
+  gameObj.currentPlayer = getNextPlayer(gameObj.currentPlayer, gameObj.users);
+  pushCacheState(socket, gameId, gameObj);
+};
+export const handleChallengeAction = (socket, gameId, action) => {};
+export const resolveChallengeAction = (socket, gameId, action) => {};
+export const handleCounterAction = (socket, gameId, action: Action) => {
+  console.log('counter action: ', action);
+  const gameObj = globalGameState[gameId];
+  if (action.type === 'foreignAid') {
+    if (action.response === 'block') {
       gameObj.activity.counterActor = socket.id;
       gameObj.activity.counterActorCard = action.counterActionCard;
       gameObj.activity.phase = 'challengeCounterAction';
     } else {
       gameObj.activity.passingUsers.push(socket.id);
+      console.log(
+        'Size check',
+        gameObj.activity.passingUsers.length,
+        Object.keys(gameObj.users).length - 1
+      );
+
       if (
         gameObj.activity.passingUsers.length ===
-        Object.keys(gameObj.users).length
+        Object.keys(gameObj.users).length - 1
       ) {
-        gameObj.activity.phase = 'resolveAction';
+        // gameObj.activity.phase = 'resolveAction';
+        resolveAction(socket, gameId, action);
       }
     }
   }

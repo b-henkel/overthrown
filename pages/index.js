@@ -10,7 +10,7 @@ export default function Home() {
     <Box
       sx={{
         display: 'block',
-        margin: 'auto',
+        marginTop: 10,
         textAlign: 'center',
       }}
     >

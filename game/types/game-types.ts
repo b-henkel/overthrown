@@ -35,3 +35,10 @@ export type GameObject = {
   currentPlayer: string;
   activity: Activity;
 };
+
+export type Action = {
+  type: string;
+  target: string;
+  response: string;
+  counterActionCard: string;
+};

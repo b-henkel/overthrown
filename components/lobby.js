@@ -46,13 +46,15 @@ export default function Lobby(props) {
     <Box
       sx={{
         display: 'block',
-        margin: 'auto',
+        marginTop: 10,
         textAlign: 'center',
       }}
     >
       <Box component='img' sx={{}} alt='characters' src='../splash.svg' />
       <Typography variant='h2'>Welcome to the Lobby!</Typography>
-      <Typography variant='h4'>Your Game ID:</Typography>
+      <Typography sx={{ marginTop: 3 }} variant='h4'>
+        Your Game ID:
+      </Typography>
       <Typography variant='h6'>{router.query.id}</Typography>
       <Button variant='outlined' onClick={copyToClipboard}>
         Copy Link to Clipboard
@@ -67,7 +69,7 @@ export default function Lobby(props) {
           width: 300,
         }}
       > */}
-      <div>
+      <Box sx={{ marginTop: 5 }}>
         <InputBase
           sx={{ ml: 1, flex: 1 }}
           required
@@ -79,9 +81,11 @@ export default function Lobby(props) {
         <Button variant='outlined' onClick={addUser}>
           submit
         </Button>
-      </div>
-      {/* </Paper> */}
-      <Typography variant='h5'>Players: </Typography>
+      </Box>
+
+      <Typography sx={{ marginTop: 3 }} variant='h5'>
+        Players:{' '}
+      </Typography>
       <List
         sx={{
           fontSize: 24,

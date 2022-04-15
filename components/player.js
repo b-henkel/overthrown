@@ -10,16 +10,53 @@ import Box from '@mui/material/Box';
 // Add animation card reveal and discard animation
 
 export default function Player(props) {
-  const handleClick = (value, targetPlayer) => {
-    console.log('target player value', targetPlayer, value);
+  const handleClick = (action, targetPlayer, response) => {
+    console.log('target player action', targetPlayer, action);
     // event.preventDefault();
-    if (value === 'overThrow') {
-      props.socket.emit('user-action', {
-        gameId: props.gameId,
-        action: { type: 'overThrow', target: targetPlayer },
-      });
-    }
+    props.socket.emit(props.phase, {
+      gameId: props.gameId,
+      action: { type: action, target: targetPlayer, response },
+    });
   };
+
+  let buttons;
+
+  if (props.phase === 'action') {
+    if (props.action === 'overThrow') {
+      buttons = (
+        <Button
+          color='error'
+          variant='contained'
+          onClick={() => handleClick(props.action, props.userId)}
+        >
+          {props.action}
+        </Button>
+      );
+    }
+  } else if (props.phase === 'counterAction' && props.isActiveUser) {
+    if (props.action === 'steal') {
+      // TODO render ambassidor and captain buttons
+    } else {
+      buttons = (
+        <Box>
+          <Button
+            color='error'
+            variant='contained'
+            onClick={() => handleClick(props.action, props.userId, 'block')}
+          >
+            BLOCK {props.action}
+          </Button>
+          <Button
+            color='success'
+            variant='contained'
+            onClick={() => handleClick(props.action, props.userId, 'pass')}
+          >
+            PASS
+          </Button>
+        </Box>
+      );
+    }
+  }
 
   return (
     <Card
@@ -32,15 +69,7 @@ export default function Player(props) {
       <Typography sx={{ fontSize: 18 }} color={props.color} gutterBottom>
         {props.userName}
       </Typography>
-      {props.action && (
-        <Button
-          color='error'
-          variant='contained'
-          onClick={() => handleClick(props.action, props.userId)}
-        >
-          {props.action}
-        </Button>
-      )}
+
       <Typography sx={{ fontSize: 18 }} gutterBottom>
         {props.coinCount}
       </Typography>
@@ -50,18 +79,17 @@ export default function Player(props) {
           justifyContent: 'center',
           p: 1,
           m: 1,
-          borderRadius: 1,
         }}
       >
         {props.cardOne && (
           <CardMedia
             sx={{
               ...props.style,
-              marginLeft: 'auto',
-              marginRight: 'auto',
+              marginLeft: 0.5,
+              marginRight: 0.5,
               display: 'flex',
               width: 'auto',
-              height: '25vh',
+              maxHeight: '23vh',
             }}
             component='img'
             image={props.cardOne}
@@ -71,17 +99,18 @@ export default function Player(props) {
           <CardMedia
             sx={{
               ...props.style,
-              marginLeft: 'auto',
-              marginRight: 'auto',
+              marginLeft: 0.5,
+              marginRight: 0.5,
               display: 'flex',
               width: 'auto',
-              height: '25vh',
+              maxHeight: '23vh',
             }}
             component='img'
             image={props.cardTwo}
           />
         )}
       </Box>
+      {buttons}
     </Card>
   );
 }
