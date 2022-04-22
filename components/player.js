@@ -56,6 +56,28 @@ export default function Player(props) {
         </Box>
       );
     }
+  } else if (
+    props.phase === 'challengeCounterAction' &&
+    props.gameState.activity.counterActor === props.userId
+  ) {
+    buttons = (
+      <Box>
+        <Button
+          color='error'
+          variant='contained'
+          onClick={() => handleClick(props.action, props.userId, 'doubt')}
+        >
+          Doubt {props.gameState.activity.counterActorCard}
+        </Button>
+        <Button
+          color='success'
+          variant='contained'
+          onClick={() => handleClick(props.action, props.userId, 'pass')}
+        >
+          PASS
+        </Button>
+      </Box>
+    );
   }
 
   return (

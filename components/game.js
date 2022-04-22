@@ -98,6 +98,7 @@ export default function Game(props) {
             }
             phase={user ? props.gameState.activity.phase : null}
             gameId={props.gameState.id}
+            gameState={props.gameState}
           />
         </Grid>
       );

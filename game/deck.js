@@ -15,6 +15,7 @@ const cards = [
   'captain',
   'ambassador',
 ];
+
 function shuffle(array) {
   let currentIndex = array.length,
     randomIndex;
@@ -32,6 +33,13 @@ function shuffle(array) {
     ];
   }
 }
+
+export const swap = (deck, cardIn) => {
+  const cardOut = deck.shift();
+  deck.push(cardIn);
+  shuffle(deck);
+  return { deck, cardOut };
+};
 
 export const deal = (userCount) => {
   // new deck

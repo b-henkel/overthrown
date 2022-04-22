@@ -10,6 +10,7 @@ export type User = {
   cardOne?: string; // Could be ENUM
   cardTwo?: string;
   number?: number;
+  participant?: boolean;
 };
 
 export type Users = {

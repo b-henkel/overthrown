@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import cache from 'memory-cache';
-import { deal } from './deck';
+import { deal, swap } from './deck';
 import { getFirstPlayer, getNextPlayer } from './user-order';
 import { GlobalGameState, GameObject, User, Action } from './types/game-types';
 
@@ -113,7 +113,7 @@ export const handleAction = (socket, gameId, action: Action) => {
   }
   if (action.type === 'overThrow') {
     gameObj.users[socket.id].coins -= 7;
-    // todo: remove opponent player when no more cards are available
+    // TODO remove opponent player when no more cards are available
     const targetUser = gameObj.users[action.target];
     if (targetUser.cardOne) {
       targetUser.cardOne = null;
@@ -143,7 +143,7 @@ export const handleCounterAction = (socket, gameId, action: Action) => {
   if (action.type === 'foreignAid') {
     if (action.response === 'block') {
       gameObj.activity.counterActor = socket.id;
-      gameObj.activity.counterActorCard = action.counterActionCard;
+      gameObj.activity.counterActorCard = 'duke';
       gameObj.activity.phase = 'challengeCounterAction';
     } else {
       gameObj.activity.passingUsers.push(socket.id);
@@ -159,12 +159,84 @@ export const handleCounterAction = (socket, gameId, action: Action) => {
       ) {
         // gameObj.activity.phase = 'resolveAction';
         resolveAction(socket, gameId, action);
+        return;
       }
     }
   }
+  pushCacheState(socket, gameId, gameObj);
 };
-export const resolveCounterAction = (socket, gameId, action) => {};
-export const handleChallengeCounterAction = (socket, gameId, action) => {};
+export const resolveCounterAction = (socket, gameId, action) => {
+  const gameObj = globalGameState[gameId];
+  if (action.type === 'foreignAid') {
+    // the only counter action for foreign aid is block so nothing happens
+    resetActivity(gameObj);
+    gameObj.currentPlayer = getNextPlayer(gameObj.currentPlayer, gameObj.users);
+  }
+  pushCacheState(socket, gameId, gameObj);
+};
+export const handleChallengeCounterAction = (socket, gameId, action) => {
+  const gameObj = globalGameState[gameId];
+  if (action.type === 'foreignAid') {
+    if (action.response === 'doubt') {
+      const doubter = gameObj.users[socket.id];
+      const counterActorId = gameObj.activity.counterActor;
+      const counterActor = gameObj.users[counterActorId];
+      const counterActorCardOne = counterActor.cardOne;
+      const counterActorCardTwo = counterActor.cardTwo;
+      const claimedCard = gameObj.activity.counterActorCard;
+      if (
+        counterActorCardOne === claimedCard ||
+        counterActorCardTwo === claimedCard
+      ) {
+        //remove card from challenger
+        if (doubter.cardOne) {
+          doubter.cardOne = null;
+        } else {
+          doubter.cardTwo = null;
+        }
+        // TODO check if user reaches game over state and set participant flag to false
+        // change claimed card to a new card from deck and shuffle
+        const { deck, cardOut } = swap(gameObj.deck, claimedCard);
+        gameObj.deck = deck;
+        if (counterActorCardOne === claimedCard) {
+          counterActor.cardOne = cardOut;
+        } else {
+          counterActor.cardTwo = cardOut;
+        }
+        // counter action completes
+        resolveCounterAction(socket, gameId, action);
+        return;
+      } else {
+        // remove card from counter actor
+        if (counterActorCardOne) {
+          counterActor.cardOne = null;
+        } else {
+          counterActor.cardTwo = null;
+        }
+        resolveAction(socket, gameId, action);
+        return;
+      }
+    } else {
+      gameObj.activity.passingUsers.push(socket.id);
+      console.log(
+        'Size check',
+        gameObj.activity.passingUsers.length,
+        Object.keys(gameObj.users).length - 1
+      );
+
+      if (
+        gameObj.activity.passingUsers.length ===
+        Object.keys(gameObj.users).length - 1
+      ) {
+        // gameObj.activity.phase = 'resolveAction';
+        resolveCounterAction(socket, gameId, action);
+        return;
+      }
+    }
+  }
+
+  pushCacheState(socket, gameId, gameObj);
+};
 export const resolveChallengeCounterAction = (socket, gameId, action) => {};
 
 export const pushState = (socket, gameId) => {
