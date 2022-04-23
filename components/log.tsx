@@ -15,11 +15,11 @@ export default function Log(props: Props) {
   return (
     <Card sx={{ height: '32vh' }}>
       <CardContent>
-        <Typography sx={{ fontSize: 24 }} color="text.primary">
+        <Typography sx={{ fontSize: 24 }} color='text.primary'>
           Action Log
         </Typography>
         <Paper style={{ maxHeight: 360, overflow: 'auto' }}>
-          <Typography sx={{ fontSize: 18 }} color="text.secondary">
+          <Typography sx={{ fontSize: 18 }} color='text.secondary'>
             {/* {JSON.stringify(props.gameState)} */}
             Game ID: {props.gameState.id} Current player:{' '}
             {props.gameState.currentPlayer}

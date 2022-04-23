@@ -58,13 +58,13 @@ export default function Lobby(props: Props) {
         textAlign: 'center',
       }}
     >
-      <Box component="img" sx={{}} alt="characters" src="../splash.svg" />
-      <Typography variant="h2">Welcome to the Lobby!</Typography>
-      <Typography sx={{ marginTop: 3 }} variant="h4">
+      <Box component='img' sx={{}} alt='characters' src='../splash.svg' />
+      <Typography variant='h2'>Welcome to the Lobby!</Typography>
+      <Typography sx={{ marginTop: 3 }} variant='h4'>
         Your Game ID:
       </Typography>
-      <Typography variant="h6">{router.query.id}</Typography>
-      <Button variant="outlined" onClick={copyToClipboard}>
+      <Typography variant='h6'>{router.query.id}</Typography>
+      <Button variant='outlined' onClick={copyToClipboard}>
         Copy Link to Clipboard
       </Button>
       {/* <Paper
@@ -81,17 +81,17 @@ export default function Lobby(props: Props) {
         <InputBase
           sx={{ ml: 1, flex: 1 }}
           required
-          id="text_box"
-          placeholder="Input a User Name"
+          id='text_box'
+          placeholder='Input a User Name'
           onChange={(e) => setUsername(e.target.value)}
           value={username}
         />
-        <Button variant="outlined" onClick={addUser}>
+        <Button variant='outlined' onClick={addUser}>
           submit
         </Button>
       </Box>
 
-      <Typography sx={{ marginTop: 3 }} variant="h5">
+      <Typography sx={{ marginTop: 3 }} variant='h5'>
         Players:{' '}
       </Typography>
       <List
@@ -107,8 +107,8 @@ export default function Lobby(props: Props) {
           })}
       </List>
       <Button
-        variant="contained"
-        color="error"
+        variant='contained'
+        color='error'
         onClick={startGame}
         disabled={
           props.gameState && Object.values(props.gameState.users).length < 2

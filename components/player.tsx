@@ -47,8 +47,8 @@ export default function Player(props: Props) {
     if (props.action === 'overThrow') {
       buttons = (
         <Button
-          color="error"
-          variant="contained"
+          color='error'
+          variant='contained'
           onClick={() => handleClick(props.action, props.userId, null)}
         >
           {props.action}
@@ -62,15 +62,15 @@ export default function Player(props: Props) {
       buttons = (
         <Box>
           <Button
-            color="error"
-            variant="contained"
+            color='error'
+            variant='contained'
             onClick={() => handleClick(props.action, props.userId, 'block')}
           >
             BLOCK {props.action}
           </Button>
           <Button
-            color="success"
-            variant="contained"
+            color='success'
+            variant='contained'
             onClick={() => handleClick(props.action, props.userId, 'pass')}
           >
             PASS
@@ -85,15 +85,15 @@ export default function Player(props: Props) {
     buttons = (
       <Box>
         <Button
-          color="error"
-          variant="contained"
+          color='error'
+          variant='contained'
           onClick={() => handleClick(props.action, props.userId, 'doubt')}
         >
           Doubt {props.gameState.activity.counterActorCard}
         </Button>
         <Button
-          color="success"
-          variant="contained"
+          color='success'
+          variant='contained'
           onClick={() => handleClick(props.action, props.userId, 'pass')}
         >
           PASS
@@ -135,7 +135,7 @@ export default function Player(props: Props) {
               width: 'auto',
               maxHeight: '23vh',
             }}
-            component="img"
+            component='img'
             image={props.cardOne}
           />
         )}
@@ -149,7 +149,7 @@ export default function Player(props: Props) {
               width: 'auto',
               maxHeight: '23vh',
             }}
-            component="img"
+            component='img'
             image={props.cardTwo}
           />
         )}

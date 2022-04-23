@@ -10,18 +10,18 @@ export default function PlayingCard() {
           marginLeft: 'auto',
           marginRight: 'auto',
         }}
-        component="img"
-        image="/card-back.svg"
-        alt="card back"
+        component='img'
+        image='/card-back.svg'
+        alt='card back'
       />
       <CardMedia
         sx={{
           marginLeft: 'auto',
           marginRight: 'auto',
         }}
-        component="img"
-        image="/card-back.svg"
-        alt="card back"
+        component='img'
+        image='/card-back.svg'
+        alt='card back'
       />
     </Card>
   );

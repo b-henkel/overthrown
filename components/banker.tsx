@@ -32,8 +32,8 @@ export default function Banker(props: Props) {
               width: 'auto',
               height: '32vh',
             }}
-            component="img"
-            image="/banker.svg"
+            component='img'
+            image='/banker.svg'
           />
           <div
             style={{
