@@ -2,6 +2,8 @@ import React from 'react';
 import { Button, Card, CardMedia } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { GameObject } from '../game/types/game-types';
+import { Socket } from 'socket.io-client';
 
 // TODO fix card spanning issue
 // Add coin count to component
@@ -9,8 +11,28 @@ import Box from '@mui/material/Box';
 // Add influence loss placeholder
 // Add animation card reveal and discard animation
 
-export default function Player(props) {
-  const handleClick = (action, targetPlayer, response) => {
+type Props = {
+  socket?: Socket;
+  style?: object;
+  cardOne?: string;
+  cardTwo?: string;
+  userName?: string;
+  userId?: string;
+  color?: string;
+  coinCount?: number;
+  isActiveUser?: boolean;
+  action?: string;
+  phase?: string;
+  gameId?: string;
+  gameState?: GameObject;
+};
+
+export default function Player(props: Props) {
+  const handleClick = (
+    action: string,
+    targetPlayer: string,
+    response: string
+  ) => {
     console.log('target player action', targetPlayer, action);
     // event.preventDefault();
     props.socket.emit(props.phase, {
@@ -25,9 +47,9 @@ export default function Player(props) {
     if (props.action === 'overThrow') {
       buttons = (
         <Button
-          color='error'
-          variant='contained'
-          onClick={() => handleClick(props.action, props.userId)}
+          color="error"
+          variant="contained"
+          onClick={() => handleClick(props.action, props.userId, null)}
         >
           {props.action}
         </Button>
@@ -40,15 +62,15 @@ export default function Player(props) {
       buttons = (
         <Box>
           <Button
-            color='error'
-            variant='contained'
+            color="error"
+            variant="contained"
             onClick={() => handleClick(props.action, props.userId, 'block')}
           >
             BLOCK {props.action}
           </Button>
           <Button
-            color='success'
-            variant='contained'
+            color="success"
+            variant="contained"
             onClick={() => handleClick(props.action, props.userId, 'pass')}
           >
             PASS
@@ -63,15 +85,15 @@ export default function Player(props) {
     buttons = (
       <Box>
         <Button
-          color='error'
-          variant='contained'
+          color="error"
+          variant="contained"
           onClick={() => handleClick(props.action, props.userId, 'doubt')}
         >
           Doubt {props.gameState.activity.counterActorCard}
         </Button>
         <Button
-          color='success'
-          variant='contained'
+          color="success"
+          variant="contained"
           onClick={() => handleClick(props.action, props.userId, 'pass')}
         >
           PASS
@@ -113,7 +135,7 @@ export default function Player(props) {
               width: 'auto',
               maxHeight: '23vh',
             }}
-            component='img'
+            component="img"
             image={props.cardOne}
           />
         )}
@@ -127,7 +149,7 @@ export default function Player(props) {
               width: 'auto',
               maxHeight: '23vh',
             }}
-            component='img'
+            component="img"
             image={props.cardTwo}
           />
         )}

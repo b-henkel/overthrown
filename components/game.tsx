@@ -9,6 +9,8 @@ import Actions from './actions';
 import { cardBack } from '../constants/cards';
 import Banker from './banker';
 import { useState } from 'react';
+import { User, GameObject } from '../game/types/game-types';
+import { Socket } from 'socket.io-client';
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -17,7 +19,13 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export default function Game(props) {
+type Props = {
+  socket: Socket;
+  gameState: GameObject;
+  userId: string;
+};
+
+export default function Game(props: Props) {
   const [targetedAction, setTargetedAction] = useState(null);
   React.useEffect(() => {
     setTargetedAction(null);
@@ -54,10 +62,10 @@ export default function Game(props) {
       default:
       // code block
     }
-    const usersArr = Object.values(props.gameState.users);
+    const usersArr: User[] = Object.values(props.gameState.users);
     const yourUserPos = props.gameState.users[props.userId].number - 1;
     usersArr.sort((userA, userB) => {
-      userA.number - userB.number;
+      return userA.number - userB.number;
     });
     let finalUserArr = usersArr.slice(yourUserPos, usersArr.length);
     if (yourUserPos != 0) {
@@ -77,7 +85,7 @@ export default function Game(props) {
           </Grid>
         );
       }
-      const user = isPlayer ? finalUserArr[isPlayer] : null;
+      const user: User = isPlayer ? finalUserArr[isPlayer] : null;
       console.log('user:', user);
 
       return (
