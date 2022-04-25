@@ -3,7 +3,13 @@ import { Card, CardMedia } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-export default function Banker(props) {
+type Props = {
+  currentPlayer: string;
+  currentPhase: string;
+  style?: object;
+};
+
+export default function Banker(props: Props) {
   return (
     <Card sx={{ height: '32vh', whiteSpace: 'nowrap' }}>
       <div

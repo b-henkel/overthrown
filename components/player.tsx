@@ -2,6 +2,8 @@ import React from 'react';
 import { Button, Card, CardMedia } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { GameObject } from '../game/types/game-types';
+import { Socket } from 'socket.io-client';
 
 // TODO fix card spanning issue
 // Add coin count to component
@@ -9,8 +11,28 @@ import Box from '@mui/material/Box';
 // Add influence loss placeholder
 // Add animation card reveal and discard animation
 
-export default function Player(props) {
-  const handleClick = (action, targetPlayer, response) => {
+type Props = {
+  socket?: Socket;
+  style?: object;
+  cardOne?: string;
+  cardTwo?: string;
+  userName?: string;
+  userId?: string;
+  color?: string;
+  coinCount?: number;
+  isActiveUser?: boolean;
+  action?: string;
+  phase?: string;
+  gameId?: string;
+  gameState?: GameObject;
+};
+
+export default function Player(props: Props) {
+  const handleClick = (
+    action: string,
+    targetPlayer: string,
+    response: string
+  ) => {
     console.log('target player action', targetPlayer, action);
     // event.preventDefault();
     props.socket.emit(props.phase, {
@@ -27,7 +49,7 @@ export default function Player(props) {
         <Button
           color='error'
           variant='contained'
-          onClick={() => handleClick(props.action, props.userId)}
+          onClick={() => handleClick(props.action, props.userId, null)}
         >
           {props.action}
         </Button>

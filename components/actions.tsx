@@ -1,23 +1,23 @@
 import React from 'react';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import { Typography } from '@mui/material';
 import { Card, Box } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import Avatar from '@mui/material/Avatar';
+import { Socket } from 'socket.io-client';
 
-export default function Actions(props) {
-  // const [value, setValue] = React.useState('');
+type Props = {
+  socket: Socket;
+  isActiveUser: boolean;
+  cardOne: string;
+  cardTwo: string;
+  gameId: string;
+  coinCount: number;
+  targetOtherPlayers: Function;
+};
 
-  // const handleRadioChange = (event) => {
-  //   setValue(event.target.value);
-  // };
-
+export default function Actions(props: Props) {
   const handleClick = (value) => {
     // event.preventDefault();
 

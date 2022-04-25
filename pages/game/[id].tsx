@@ -4,14 +4,15 @@ import { useState, useEffect } from 'react';
 import io, { Socket } from 'socket.io-client';
 import Game from '../../components/game';
 import Lobby from '../../components/lobby';
+import { GameObject } from '../../game/types/game-types';
 
 // TODO the initial game object with users should be marked with some started:False flag
 function GameBase() {
   const router = useRouter();
   const { id: gameId } = router.query;
-  const [socket, setSocket] = useState(null);
-  const [gameState, setGameState] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const [socket, setSocket] = useState<Socket | undefined>(null);
+  const [gameState, setGameState] = useState<GameObject | undefined>(null);
+  const [userId, setUserId] = useState<string | undefined>(null);
 
   useEffect(() => {
     fetch('/api/socketio').finally(() => {

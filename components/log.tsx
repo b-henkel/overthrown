@@ -3,8 +3,13 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { Paper } from '@mui/material';
+import { GameObject } from '../game/types/game-types';
 
-export default function Log(props) {
+type Props = {
+  gameState: GameObject;
+};
+
+export default function Log(props: Props) {
   const usersArr = Object.keys(props.gameState.users);
   console.log('userArr', usersArr);
   return (

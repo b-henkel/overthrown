@@ -11,11 +11,19 @@ import {
   Paper,
   InputBase,
 } from '@mui/material';
+import { Socket } from 'socket.io-client';
+import { GameObject } from '../game/types/game-types';
 
 import copy from 'copy-to-clipboard';
 import { textAlign } from '@mui/system';
 
-export default function Lobby(props) {
+type Props = {
+  socket: Socket;
+  gameState: GameObject;
+  userId: string;
+};
+
+export default function Lobby(props: Props) {
   const router = useRouter();
   const { id: gameId } = router.query;
   const [username, setUsername] = useState('');
