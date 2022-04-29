@@ -55,6 +55,25 @@ export default function Player(props: Props) {
         </Button>
       );
     }
+  } else if (props.phase === 'challengeAction' && props.isActiveUser) {
+    buttons = (
+      <Box>
+        <Button
+          color='error'
+          variant='contained'
+          onClick={() => handleClick(props.action, props.userId, 'challenge')}
+        >
+          CHALLENGE {props.action}
+        </Button>
+        <Button
+          color='success'
+          variant='contained'
+          onClick={() => handleClick(props.action, props.userId, 'pass')}
+        >
+          PASS
+        </Button>
+      </Box>
+    );
   } else if (props.phase === 'counterAction' && props.isActiveUser) {
     if (props.action === 'steal') {
       // TODO render ambassidor and captain buttons

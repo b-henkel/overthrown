@@ -75,6 +75,7 @@ export default function Actions(props: Props) {
             <Button
               variant='outlined'
               startIcon={<Avatar src='/duke-icon.svg' />}
+              onClick={() => handleClick('tax')}
             >
               Tax
             </Button>

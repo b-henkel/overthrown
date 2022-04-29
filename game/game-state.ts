@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import cache from 'memory-cache';
-import { deal, swap } from './deck';
+import { deal, swap, translateActionToCard } from './deck';
 import { getFirstPlayer, getNextPlayer } from './user-order';
 import { GlobalGameState, GameObject, User, Action } from './types/game-types';
 
@@ -123,6 +123,11 @@ export const handleAction = (socket, gameId, action: Action) => {
     gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
     resetActivity(gameObj);
   }
+  if (action.type === 'tax') {
+    if (gameObj.activity.phase === 'action') {
+      gameObj.activity.phase = 'challengeAction';
+    }
+  }
   pushCacheState(socket, gameId, gameObj);
 };
 
@@ -130,12 +135,76 @@ export const resolveAction = (socket, gameId, action: Action) => {
   const gameObj = globalGameState[gameId];
   if (action.type === 'foreignAid') {
     gameObj.users[gameObj.currentPlayer].coins += 2;
+  } else if (action.type === 'tax') {
+    gameObj.users[gameObj.currentPlayer].coins += 3;
   }
   resetActivity(gameObj);
   gameObj.currentPlayer = getNextPlayer(gameObj.currentPlayer, gameObj.users);
   pushCacheState(socket, gameId, gameObj);
 };
-export const handleChallengeAction = (socket, gameId, action) => {};
+export const handleChallengeAction = (socket, gameId, action) => {
+  const gameObj = globalGameState[gameId];
+  if (action.type === 'tax') {
+    if (action.response === 'challenge') {
+      const challenger = gameObj.users[socket.id];
+      const activePlayerId = gameObj.currentPlayer;
+      const activePlayer = gameObj.users[activePlayerId];
+      const activePlayerCardOne = activePlayer.cardOne;
+      const activePlayerCardTwo = activePlayer.cardTwo;
+      const claimedCard = translateActionToCard(gameObj.activity.action);
+
+      if (
+        activePlayerCardOne === claimedCard ||
+        activePlayerCardTwo === claimedCard
+      ) {
+        //remove card from challenger
+        if (challenger.cardOne) {
+          challenger.cardOne = null;
+        } else {
+          challenger.cardTwo = null;
+        }
+        // TODO check if user reaches game over state and set participant flag to false
+        // change claimed card to a new card from deck and shuffle
+        const { deck, cardOut } = swap(gameObj.deck, claimedCard);
+        gameObj.deck = deck;
+        if (activePlayerCardOne === claimedCard) {
+          activePlayer.cardOne = cardOut;
+        } else {
+          activePlayer.cardTwo = cardOut;
+        }
+        // moves to resolve action phase completes
+        resolveAction(socket, gameId, action);
+      } else {
+        // remove card from lying actor
+        if (activePlayerCardOne) {
+          activePlayer.cardOne = null;
+        } else {
+          activePlayer.cardTwo = null;
+        }
+        resetActivity(gameObj);
+        gameObj.currentPlayer = getNextPlayer(
+          gameObj.currentPlayer,
+          gameObj.users
+        );
+      }
+    } else {
+      gameObj.activity.passingUsers.push(socket.id);
+      console.log(
+        'Size check',
+        gameObj.activity.passingUsers.length,
+        Object.keys(gameObj.users).length - 1
+      );
+
+      if (
+        gameObj.activity.passingUsers.length ===
+        Object.keys(gameObj.users).length - 1
+      ) {
+        resolveAction(socket, gameId, action);
+      }
+    }
+  }
+  pushCacheState(socket, gameId, gameObj);
+};
 export const resolveChallengeAction = (socket, gameId, action) => {};
 export const handleCounterAction = (socket, gameId, action: Action) => {
   console.log('counter action: ', action);

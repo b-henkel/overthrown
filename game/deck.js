@@ -55,3 +55,14 @@ export const deal = (userCount) => {
   });
   return { hands, deck };
 };
+
+const actionToCard = {
+  tax: 'duke',
+  assassinate: 'assassin',
+  exchange: 'ambassador',
+  steal: 'captain',
+};
+
+export const translateActionToCard = (action) => {
+  return actionToCard[action];
+};
