@@ -56,6 +56,7 @@ export default function Actions(props: Props) {
               variant='outlined'
               startIcon={<Avatar src='/aid-icon.svg' />}
               onClick={() => handleClick('foreignAid')}
+              disabled={!props.isActiveUser}
             >
               Foreign Aid
             </Button>
@@ -76,12 +77,15 @@ export default function Actions(props: Props) {
               variant='outlined'
               startIcon={<Avatar src='/duke-icon.svg' />}
               onClick={() => handleClick('tax')}
+              disabled={!props.isActiveUser}
             >
               Tax
             </Button>
             <Button
               variant='outlined'
               startIcon={<Avatar src='/assassin-icon.svg' />}
+              onClick={() => props.targetOtherPlayers('assassinate')}
+              disabled={!props.isActiveUser || props.coinCount < 3}
             >
               Assasinate
             </Button>
@@ -90,12 +94,14 @@ export default function Actions(props: Props) {
             <Button
               variant='outlined'
               startIcon={<Avatar src='/captain-icon.svg' />}
+              disabled={!props.isActiveUser}
             >
               Steal
             </Button>
             <Button
               variant='outlined'
               startIcon={<Avatar src='/ambassador-icon.svg' />}
+              disabled={!props.isActiveUser}
             >
               Exchange
             </Button>

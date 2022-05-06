@@ -44,7 +44,7 @@ export default function Player(props: Props) {
   let buttons;
 
   if (props.phase === 'action') {
-    if (props.action === 'overThrow') {
+    if (props.action === 'overThrow' || props.action === 'assassinate') {
       buttons = (
         <Button
           color='error'

@@ -123,7 +123,7 @@ export const handleAction = (socket, gameId, action: Action) => {
     gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
     resetActivity(gameObj);
   }
-  if (action.type === 'tax') {
+  if (action.type === 'tax' || action.type === 'assassinate') {
     if (gameObj.activity.phase === 'action') {
       gameObj.activity.phase = 'challengeAction';
     }
@@ -137,6 +137,14 @@ export const resolveAction = (socket, gameId, action: Action) => {
     gameObj.users[gameObj.currentPlayer].coins += 2;
   } else if (action.type === 'tax') {
     gameObj.users[gameObj.currentPlayer].coins += 3;
+  } else if (action.type === 'assassinate') {
+    gameObj.users[gameObj.currentPlayer].coins -= 3;
+    const targetUser = gameObj.users[action.target];
+    if (targetUser.cardOne) {
+      targetUser.cardOne = null;
+    } else {
+      targetUser.cardTwo = null;
+    }
   }
   resetActivity(gameObj);
   gameObj.currentPlayer = getNextPlayer(gameObj.currentPlayer, gameObj.users);
@@ -144,63 +152,72 @@ export const resolveAction = (socket, gameId, action: Action) => {
 };
 export const handleChallengeAction = (socket, gameId, action) => {
   const gameObj = globalGameState[gameId];
+  let nextStep;
   if (action.type === 'tax') {
-    if (action.response === 'challenge') {
-      const challenger = gameObj.users[socket.id];
-      const activePlayerId = gameObj.currentPlayer;
-      const activePlayer = gameObj.users[activePlayerId];
-      const activePlayerCardOne = activePlayer.cardOne;
-      const activePlayerCardTwo = activePlayer.cardTwo;
-      const claimedCard = translateActionToCard(gameObj.activity.action);
+    nextStep = () => {
+      resolveAction(socket, gameId, action);
+    };
+  } else if (action.type === 'assassinate') {
+    nextStep = () => {
+      gameObj.activity.phase = 'counterAction';
+    };
+  }
+  if (action.response === 'challenge') {
+    const challenger = gameObj.users[socket.id];
+    const activePlayerId = gameObj.currentPlayer;
+    const activePlayer = gameObj.users[activePlayerId];
+    const activePlayerCardOne = activePlayer.cardOne;
+    const activePlayerCardTwo = activePlayer.cardTwo;
+    const claimedCard = translateActionToCard(gameObj.activity.action);
 
-      if (
-        activePlayerCardOne === claimedCard ||
-        activePlayerCardTwo === claimedCard
-      ) {
-        //remove card from challenger
-        if (challenger.cardOne) {
-          challenger.cardOne = null;
-        } else {
-          challenger.cardTwo = null;
-        }
-        // TODO check if user reaches game over state and set participant flag to false
-        // change claimed card to a new card from deck and shuffle
-        const { deck, cardOut } = swap(gameObj.deck, claimedCard);
-        gameObj.deck = deck;
-        if (activePlayerCardOne === claimedCard) {
-          activePlayer.cardOne = cardOut;
-        } else {
-          activePlayer.cardTwo = cardOut;
-        }
-        // moves to resolve action phase completes
-        resolveAction(socket, gameId, action);
+    if (
+      activePlayerCardOne === claimedCard ||
+      activePlayerCardTwo === claimedCard
+    ) {
+      //remove card from challenger
+      if (challenger.cardOne) {
+        challenger.cardOne = null;
       } else {
-        // remove card from lying actor
-        if (activePlayerCardOne) {
-          activePlayer.cardOne = null;
-        } else {
-          activePlayer.cardTwo = null;
-        }
-        resetActivity(gameObj);
-        gameObj.currentPlayer = getNextPlayer(
-          gameObj.currentPlayer,
-          gameObj.users
-        );
+        challenger.cardTwo = null;
       }
+      // TODO check if user reaches game over state and set participant flag to false
+      // change claimed card to a new card from deck and shuffle
+      const { deck, cardOut } = swap(gameObj.deck, claimedCard);
+      gameObj.deck = deck;
+      if (activePlayerCardOne === claimedCard) {
+        activePlayer.cardOne = cardOut;
+      } else {
+        activePlayer.cardTwo = cardOut;
+      }
+      // moves to resolve action phase completes
+      nextStep();
     } else {
-      gameObj.activity.passingUsers.push(socket.id);
-      console.log(
-        'Size check',
-        gameObj.activity.passingUsers.length,
-        Object.keys(gameObj.users).length - 1
-      );
-
-      if (
-        gameObj.activity.passingUsers.length ===
-        Object.keys(gameObj.users).length - 1
-      ) {
-        resolveAction(socket, gameId, action);
+      // remove card from lying actor
+      if (activePlayerCardOne) {
+        activePlayer.cardOne = null;
+      } else {
+        activePlayer.cardTwo = null;
       }
+      resetActivity(gameObj);
+      gameObj.currentPlayer = getNextPlayer(
+        gameObj.currentPlayer,
+        gameObj.users
+      );
+    }
+  } else {
+    gameObj.activity.passingUsers.push(socket.id);
+    console.log(
+      'Size check',
+      gameObj.activity.passingUsers.length,
+      Object.keys(gameObj.users).length - 1
+    );
+
+    if (
+      gameObj.activity.passingUsers.length ===
+      Object.keys(gameObj.users).length - 1
+    ) {
+      gameObj.activity.passingUsers = [];
+      nextStep();
     }
   }
   pushCacheState(socket, gameId, gameObj);
@@ -210,33 +227,36 @@ export const handleCounterAction = (socket, gameId, action: Action) => {
   console.log('counter action: ', action);
   const gameObj = globalGameState[gameId];
   if (action.type === 'foreignAid') {
-    if (action.response === 'block') {
-      gameObj.activity.counterActor = socket.id;
-      gameObj.activity.counterActorCard = 'duke';
-      gameObj.activity.phase = 'challengeCounterAction';
-    } else {
-      gameObj.activity.passingUsers.push(socket.id);
-      console.log(
-        'Size check',
-        gameObj.activity.passingUsers.length,
-        Object.keys(gameObj.users).length - 1
-      );
+    gameObj.activity.counterActorCard = 'duke';
+  } else if (action.type === 'assassinate') {
+    gameObj.activity.counterActorCard = 'contessa';
+  }
+  if (action.response === 'block') {
+    gameObj.activity.counterActor = socket.id;
+    gameObj.activity.phase = 'challengeCounterAction';
+  } else {
+    gameObj.activity.passingUsers.push(socket.id);
+    console.log(
+      'Size check',
+      gameObj.activity.passingUsers.length,
+      Object.keys(gameObj.users).length - 1
+    );
 
-      if (
-        gameObj.activity.passingUsers.length ===
-        Object.keys(gameObj.users).length - 1
-      ) {
-        // gameObj.activity.phase = 'resolveAction';
-        resolveAction(socket, gameId, action);
-        return;
-      }
+    if (
+      gameObj.activity.passingUsers.length ===
+      Object.keys(gameObj.users).length - 1
+    ) {
+      // gameObj.activity.phase = 'resolveAction';
+      gameObj.activity.passingUsers = [];
+      resolveAction(socket, gameId, action);
+      return;
     }
   }
   pushCacheState(socket, gameId, gameObj);
 };
 export const resolveCounterAction = (socket, gameId, action) => {
   const gameObj = globalGameState[gameId];
-  if (action.type === 'foreignAid') {
+  if (action.type === 'foreignAid' || action.type === 'assassinate') {
     // the only counter action for foreign aid is block so nothing happens
     resetActivity(gameObj);
     gameObj.currentPlayer = getNextPlayer(gameObj.currentPlayer, gameObj.users);
@@ -245,7 +265,7 @@ export const resolveCounterAction = (socket, gameId, action) => {
 };
 export const handleChallengeCounterAction = (socket, gameId, action) => {
   const gameObj = globalGameState[gameId];
-  if (action.type === 'foreignAid') {
+  if (action.type === 'foreignAid' || action.type === 'assassinate') {
     if (action.response === 'doubt') {
       const doubter = gameObj.users[socket.id];
       const counterActorId = gameObj.activity.counterActor;
@@ -298,6 +318,7 @@ export const handleChallengeCounterAction = (socket, gameId, action) => {
         Object.keys(gameObj.users).length - 1
       ) {
         // gameObj.activity.phase = 'resolveAction';
+        gameObj.activity.passingUsers = [];
         resolveCounterAction(socket, gameId, action);
         return;
       }
