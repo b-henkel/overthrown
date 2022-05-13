@@ -94,7 +94,7 @@ export default function Actions(props: Props) {
             <Button
               variant='outlined'
               startIcon={<Avatar src='/captain-icon.svg' />}
-              disabled={!props.isActiveUser}
+              disabled={!props.isActiveUser}                            onClick={() => props.targetOtherPlayers('steal')}
             >
               Steal
             </Button>
@@ -102,6 +102,7 @@ export default function Actions(props: Props) {
               variant='outlined'
               startIcon={<Avatar src='/ambassador-icon.svg' />}
               disabled={!props.isActiveUser}
+              onClick={() => handleClick('exchange')}
             >
               Exchange
             </Button>

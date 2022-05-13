@@ -101,6 +101,8 @@ export const handleAction = (socket, gameId, action: Action) => {
   /* {type:"income", target:null} */
   const gameObj = globalGameState[gameId];
   gameObj.activity.action = action.type;
+  gameObj.activity.actionTarget = action.target;
+
   if (action.type === 'income') {
     gameObj.users[socket.id].coins += 1;
     gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
@@ -123,7 +125,7 @@ export const handleAction = (socket, gameId, action: Action) => {
     gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
     resetActivity(gameObj);
   }
-  if (action.type === 'tax' || action.type === 'assassinate') {
+  if (['tax', 'assassinate', 'steal'].includes(action.type)) {
     if (gameObj.activity.phase === 'action') {
       gameObj.activity.phase = 'challengeAction';
     }
@@ -139,11 +141,23 @@ export const resolveAction = (socket, gameId, action: Action) => {
     gameObj.users[gameObj.currentPlayer].coins += 3;
   } else if (action.type === 'assassinate') {
     gameObj.users[gameObj.currentPlayer].coins -= 3;
-    const targetUser = gameObj.users[action.target];
+    const targetUser = gameObj.users[gameObj.activity.actionTarget];
     if (targetUser.cardOne) {
       targetUser.cardOne = null;
     } else {
       targetUser.cardTwo = null;
+    }
+  } else if (action.type === 'steal') {
+    const targetUser = gameObj.users[gameObj.activity.actionTarget];
+    console.log('resolve action steal ', targetUser);
+    if (targetUser.coins >= 2) {
+      console.log('inside the If statement :)');
+      targetUser.coins -= 2;
+      gameObj.users[gameObj.currentPlayer].coins += 2;
+    } else {
+      console.log('inside the else statement :(');
+      gameObj.users[gameObj.currentPlayer].coins += targetUser.coins;
+      targetUser.coins = 0;
     }
   }
   resetActivity(gameObj);
@@ -157,7 +171,7 @@ export const handleChallengeAction = (socket, gameId, action) => {
     nextStep = () => {
       resolveAction(socket, gameId, action);
     };
-  } else if (action.type === 'assassinate') {
+  } else if (['assassinate', 'steal'].includes(action.type)) {
     nextStep = () => {
       gameObj.activity.phase = 'counterAction';
     };
@@ -226,11 +240,7 @@ export const resolveChallengeAction = (socket, gameId, action) => {};
 export const handleCounterAction = (socket, gameId, action: Action) => {
   console.log('counter action: ', action);
   const gameObj = globalGameState[gameId];
-  if (action.type === 'foreignAid') {
-    gameObj.activity.counterActorCard = 'duke';
-  } else if (action.type === 'assassinate') {
-    gameObj.activity.counterActorCard = 'contessa';
-  }
+  gameObj.activity.counterActorCard = action.counterActorCard;
   if (action.response === 'block') {
     gameObj.activity.counterActor = socket.id;
     gameObj.activity.phase = 'challengeCounterAction';
@@ -256,7 +266,7 @@ export const handleCounterAction = (socket, gameId, action: Action) => {
 };
 export const resolveCounterAction = (socket, gameId, action) => {
   const gameObj = globalGameState[gameId];
-  if (action.type === 'foreignAid' || action.type === 'assassinate') {
+  if (['foreignAid', 'assassinate', 'steal'].includes(action.type)) {
     // the only counter action for foreign aid is block so nothing happens
     resetActivity(gameObj);
     gameObj.currentPlayer = getNextPlayer(gameObj.currentPlayer, gameObj.users);
@@ -265,7 +275,7 @@ export const resolveCounterAction = (socket, gameId, action) => {
 };
 export const handleChallengeCounterAction = (socket, gameId, action) => {
   const gameObj = globalGameState[gameId];
-  if (action.type === 'foreignAid' || action.type === 'assassinate') {
+  if (['foreignAid', 'assassinate', 'steal'].includes(action.type)) {
     if (action.response === 'doubt') {
       const doubter = gameObj.users[socket.id];
       const counterActorId = gameObj.activity.counterActor;

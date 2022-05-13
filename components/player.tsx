@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { GameObject } from '../game/types/game-types';
 import { Socket } from 'socket.io-client';
+import Avatar from '@mui/material/Avatar';
 
 // TODO fix card spanning issue
 // Add coin count to component
@@ -31,20 +32,26 @@ export default function Player(props: Props) {
   const handleClick = (
     action: string,
     targetPlayer: string,
-    response: string
+    response: string,
+    counterActorCard: string = null
   ) => {
     console.log('target player action', targetPlayer, action);
     // event.preventDefault();
     props.socket.emit(props.phase, {
       gameId: props.gameId,
-      action: { type: action, target: targetPlayer, response },
+      action: {
+        type: action,
+        target: targetPlayer,
+        response,
+        counterActorCard,
+      },
     });
   };
 
   let buttons;
 
   if (props.phase === 'action') {
-    if (props.action === 'overThrow' || props.action === 'assassinate') {
+    if (['overThrow', 'assassinate', 'steal'].includes(props.action)) {
       buttons = (
         <Button
           color='error'
@@ -75,28 +82,49 @@ export default function Player(props: Props) {
       </Box>
     );
   } else if (props.phase === 'counterAction' && props.isActiveUser) {
-    if (props.action === 'steal') {
-      // TODO render ambassidor and captain buttons
-    } else {
-      buttons = (
-        <Box>
+    const blockIcon = {
+      foreignAid: ['/duke-icon.svg', 'duke'],
+      steal: ['/ambassador-icon.svg', 'ambassador'],
+      assassinate: ['/contessa-icon.svg', 'contessa'],
+    };
+    buttons = (
+      <Box>
+        <Button
+          color='error'
+          variant='contained'
+          onClick={() =>
+            handleClick(
+              props.action,
+              props.userId,
+              'block',
+              blockIcon[props.action][1]
+            )
+          }
+          startIcon={<Avatar src={blockIcon[props.action][0]} />}
+        >
+          BLOCK {props.action}
+        </Button>
+        {props.action === 'steal' && (
           <Button
             color='error'
             variant='contained'
-            onClick={() => handleClick(props.action, props.userId, 'block')}
+            onClick={() =>
+              handleClick(props.action, props.userId, 'block', 'captain')
+            }
+            startIcon={<Avatar src='/captain-icon.svg' />}
           >
             BLOCK {props.action}
           </Button>
-          <Button
-            color='success'
-            variant='contained'
-            onClick={() => handleClick(props.action, props.userId, 'pass')}
-          >
-            PASS
-          </Button>
-        </Box>
-      );
-    }
+        )}
+        <Button
+          color='success'
+          variant='contained'
+          onClick={() => handleClick(props.action, props.userId, 'pass')}
+        >
+          PASS
+        </Button>
+      </Box>
+    );
   } else if (
     props.phase === 'challengeCounterAction' &&
     props.gameState.activity.counterActor === props.userId

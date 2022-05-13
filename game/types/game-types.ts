@@ -41,5 +41,5 @@ export type Action = {
   type: string;
   target: string;
   response: string;
-  counterActionCard: string;
+  counterActorCard: string;
 };
