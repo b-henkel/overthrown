@@ -117,13 +117,12 @@ export const handleAction = (socket, gameId, action: Action) => {
     gameObj.users[socket.id].coins -= 7;
     // TODO remove opponent player when no more cards are available
     const targetUser = gameObj.users[action.target];
-    if (targetUser.cardOne) {
-      targetUser.cardOne = null;
-    } else {
-      targetUser.cardTwo = null;
-    }
-    gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
-    resetActivity(gameObj);
+    // if (targetUser.cardOne) {
+    //   targetUser.cardOne = null;
+    // } else {
+    //   targetUser.cardTwo = null;
+    // }
+    pushLoseInfluence(socket, {}, targetUser.id);
   }
   if (['tax', 'assassinate', 'steal'].includes(action.type)) {
     if (gameObj.activity.phase === 'action') {
@@ -137,6 +136,9 @@ export const resolveAction = (socket, gameId, action: Action) => {
   const gameObj = globalGameState[gameId];
   if (action.type === 'foreignAid') {
     gameObj.users[gameObj.currentPlayer].coins += 2;
+  } else if (action.type === 'overthrow') {
+    gameObj.currentPlayer = getNextPlayer(socket.id, gameObj.users);
+    resetActivity(gameObj);
   } else if (action.type === 'tax') {
     gameObj.users[gameObj.currentPlayer].coins += 3;
   } else if (action.type === 'assassinate') {
@@ -345,9 +347,13 @@ export const pushState = (socket, gameId) => {
   socket.emit('state-update', gameObj);
 };
 
-const pushCacheState = (socket, gameId, gameObj) => {
+export const pushCacheState = (socket, gameId, gameObj) => {
   cache.put('globalGameState', globalGameState);
   socket.emit('state-update', gameObj);
   socket.to(gameId).emit('state-update', gameObj);
   console.log('game state: ', gameObj);
+};
+
+const pushLoseInfluence = (socket, payload, targetPlayerId) => {
+  socket.to(targetPlayerId).emit('lose-influence', payload);
 };

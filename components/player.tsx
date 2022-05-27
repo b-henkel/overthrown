@@ -47,7 +47,18 @@ export default function Player(props: Props) {
       },
     });
   };
-
+  const handleLoseInfluence = (card) => {
+    const gameState = props.gameState;
+    if (card === 'one') {
+      gameState.users[props.userId].cardOneActive = false;
+    } else {
+      gameState.users[props.userId].cardTwoActive = false;
+    }
+    props.socket.emit('lose-influence', {
+      gameId: props.gameState.id,
+      gameObj: gameState,
+    });
+  };
   let buttons;
 
   if (props.phase === 'action') {
@@ -144,6 +155,26 @@ export default function Player(props: Props) {
           onClick={() => handleClick(props.action, props.userId, 'pass')}
         >
           PASS
+        </Button>
+      </Box>
+    );
+  } else if (props.phase === 'lose-influence') {
+    const currentUser = props.gameState.users[props.userId];
+    buttons = (
+      <Box>
+        <Button
+          color='error'
+          variant='contained'
+          onClick={() => handleLoseInfluence('one')}
+        >
+          Lose {currentUser.cardOne}
+        </Button>
+        <Button
+          color='error'
+          variant='contained'
+          onClick={() => handleLoseInfluence('two')}
+        >
+          Lose {currentUser.cardTwo}
         </Button>
       </Box>
     );

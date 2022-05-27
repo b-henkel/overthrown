@@ -23,6 +23,7 @@ type Props = {
   socket: Socket;
   gameState: GameObject;
   userId: string;
+  loseInfluence: boolean;
 };
 
 export default function Game(props: Props) {
@@ -125,12 +126,15 @@ export default function Game(props: Props) {
         <Grid item xs={1}>
           <Player
             userName={currentUser.name}
+            userId={props.userId}
+            gameState={props.gameState}
             color={currentUser.color}
             cardOne={currentUser.cardOne && `/${currentUser.cardOne}.svg`}
             cardTwo={currentUser.cardTwo && `/${currentUser.cardTwo}.svg`}
             coinCount={currentUser.coins}
             isActiveUser={props.gameState.currentPlayer === props.userId}
             // style={{ height: '47.5vh', width: '30vw' }}
+            phase={props.loseInfluence ? 'lose-influence' : null}
           />
         </Grid>
         <Grid item xs={1}>

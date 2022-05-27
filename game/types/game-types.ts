@@ -9,6 +9,8 @@ export type User = {
   color?: string;
   cardOne?: string; // Could be ENUM
   cardTwo?: string;
+  cardOneActive?: boolean;
+  cardTwoActive?: boolean;
   number?: number;
   participant?: boolean;
 };

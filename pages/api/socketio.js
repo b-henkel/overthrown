@@ -8,6 +8,8 @@ import {
   handleChallengeAction,
   handleCounterAction,
   handleChallengeCounterAction,
+  pushCacheState,
+  resolveAction,
 } from '../../game/game-state';
 
 const ioHandler = (req, res) => {
@@ -59,7 +61,21 @@ const ioHandler = (req, res) => {
       socket.on('challengeCounterAction', (data) => {
         handleChallengeCounterAction(socket, data.gameId, data.action);
       });
-
+      socket.on("lose-influence", (data) => {
+        pushCacheState(socket, data.gameId, data.gameObj); 
+        switch (data.gameObj.activity.phase) {
+          case 'action':
+             resolveAction(socket,data.gameId,{type:data.gameObj.activity.action})
+            break;
+          case 'Mangoes':
+            break;
+          case 'Papayas':
+            console.log('Mangoes and papayas are $2.79 a pound.');
+            break;
+          default:
+            console.log(`Sorry, we are out of ${expr}.`);
+        }
+      });
       socket.on('disconnect', () => {
         removeUser(socket);
       });
