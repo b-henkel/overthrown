@@ -67,6 +67,8 @@ export const startGame = (socket, gameId) => {
     const hand = hands[index];
     user.cardOne = hand.cardOne;
     user.cardTwo = hand.cardTwo;
+    user.cardOneActive = true;
+    user.cardTwoActive = true;
   });
   const firstPlayer = getFirstPlayer(gameObj.users);
   gameObj.currentPlayer = firstPlayer;
@@ -348,6 +350,7 @@ export const pushState = (socket, gameId) => {
 };
 
 export const pushCacheState = (socket, gameId, gameObj) => {
+  globalGameState[gameId] = gameObj;
   cache.put('globalGameState', globalGameState);
   socket.emit('state-update', gameObj);
   socket.to(gameId).emit('state-update', gameObj);

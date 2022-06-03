@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import Player from './player';
 import Log from './log';
 import Actions from './actions';
-import { cardBack } from '../constants/cards';
+import { cardBack, toImage } from '../constants/cards';
 import Banker from './banker';
 import { useState } from 'react';
 import { User, GameObject } from '../game/types/game-types';
@@ -93,8 +93,22 @@ export default function Game(props: Props) {
         <Grid item xs={1}>
           <Player
             socket={props.socket}
-            cardOne={user && user.cardOne ? cardBack : null}
-            cardTwo={user && user.cardTwo ? cardBack : null}
+            cardOne={
+              user
+                ? user.cardOneActive
+                  ? cardBack
+                  : toImage(user.cardOne)
+                : null
+            }
+            cardTwo={
+              user
+                ? user.cardTwoActive
+                  ? cardBack
+                  : toImage(user.cardTwo)
+                : null
+            }
+            cardOneActive={user ? user.cardOneActive : null}
+            cardTwoActive={user ? user.cardTwoActive : null}
             userName={user ? user.name : null}
             userId={user ? user.id : null}
             color={user ? user.color : null}
@@ -108,6 +122,7 @@ export default function Game(props: Props) {
             phase={user ? props.gameState.activity.phase : null}
             gameId={props.gameState.id}
             gameState={props.gameState}
+            loseInfluence={props.loseInfluence}
           />
         </Grid>
       );
@@ -131,10 +146,13 @@ export default function Game(props: Props) {
             color={currentUser.color}
             cardOne={currentUser.cardOne && `/${currentUser.cardOne}.svg`}
             cardTwo={currentUser.cardTwo && `/${currentUser.cardTwo}.svg`}
+            cardOneActive={currentUser.cardOneActive}
+            cardTwoActive={currentUser.cardTwoActive}
             coinCount={currentUser.coins}
             isActiveUser={props.gameState.currentPlayer === props.userId}
             // style={{ height: '47.5vh', width: '30vw' }}
             phase={props.loseInfluence ? 'lose-influence' : null}
+            socket={props.socket}
           />
         </Grid>
         <Grid item xs={1}>

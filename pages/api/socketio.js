@@ -63,6 +63,7 @@ const ioHandler = (req, res) => {
       });
       socket.on("lose-influence", (data) => {
         pushCacheState(socket, data.gameId, data.gameObj); 
+        socket.emit("unset-lose-influence",{});
         switch (data.gameObj.activity.phase) {
           case 'action':
              resolveAction(socket,data.gameId,{type:data.gameObj.activity.action})

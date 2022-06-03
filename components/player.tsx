@@ -17,6 +17,8 @@ type Props = {
   style?: object;
   cardOne?: string;
   cardTwo?: string;
+  cardOneActive?: boolean;
+  cardTwoActive?: boolean;
   userName?: string;
   userId?: string;
   color?: string;
@@ -26,6 +28,7 @@ type Props = {
   phase?: string;
   gameId?: string;
   gameState?: GameObject;
+  loseInfluence?: boolean;
 };
 
 export default function Player(props: Props) {
@@ -60,126 +63,130 @@ export default function Player(props: Props) {
     });
   };
   let buttons;
-
-  if (props.phase === 'action') {
-    if (['overThrow', 'assassinate', 'steal'].includes(props.action)) {
+  if (!props.loseInfluence) {
+    if (props.phase === 'action') {
+      if (['overThrow', 'assassinate', 'steal'].includes(props.action)) {
+        buttons = (
+          <Button
+            color='error'
+            variant='contained'
+            onClick={() => handleClick(props.action, props.userId, null)}
+          >
+            {props.action}
+          </Button>
+        );
+      }
+    } else if (props.phase === 'challengeAction' && props.isActiveUser) {
       buttons = (
-        <Button
-          color='error'
-          variant='contained'
-          onClick={() => handleClick(props.action, props.userId, null)}
-        >
-          {props.action}
-        </Button>
+        <Box>
+          <Button
+            color='error'
+            variant='contained'
+            onClick={() => handleClick(props.action, props.userId, 'challenge')}
+          >
+            CHALLENGE {props.action}
+          </Button>
+          <Button
+            color='success'
+            variant='contained'
+            onClick={() => handleClick(props.action, props.userId, 'pass')}
+          >
+            PASS
+          </Button>
+        </Box>
       );
-    }
-  } else if (props.phase === 'challengeAction' && props.isActiveUser) {
-    buttons = (
-      <Box>
-        <Button
-          color='error'
-          variant='contained'
-          onClick={() => handleClick(props.action, props.userId, 'challenge')}
-        >
-          CHALLENGE {props.action}
-        </Button>
-        <Button
-          color='success'
-          variant='contained'
-          onClick={() => handleClick(props.action, props.userId, 'pass')}
-        >
-          PASS
-        </Button>
-      </Box>
-    );
-  } else if (props.phase === 'counterAction' && props.isActiveUser) {
-    const blockIcon = {
-      foreignAid: ['/duke-icon.svg', 'duke'],
-      steal: ['/ambassador-icon.svg', 'ambassador'],
-      assassinate: ['/contessa-icon.svg', 'contessa'],
-    };
-    buttons = (
-      <Box>
-        <Button
-          color='error'
-          variant='contained'
-          onClick={() =>
-            handleClick(
-              props.action,
-              props.userId,
-              'block',
-              blockIcon[props.action][1]
-            )
-          }
-          startIcon={<Avatar src={blockIcon[props.action][0]} />}
-        >
-          BLOCK {props.action}
-        </Button>
-        {props.action === 'steal' && (
+    } else if (props.phase === 'counterAction' && props.isActiveUser) {
+      const blockIcon = {
+        foreignAid: ['/duke-icon.svg', 'duke'],
+        steal: ['/ambassador-icon.svg', 'ambassador'],
+        assassinate: ['/contessa-icon.svg', 'contessa'],
+      };
+      buttons = (
+        <Box>
           <Button
             color='error'
             variant='contained'
             onClick={() =>
-              handleClick(props.action, props.userId, 'block', 'captain')
+              handleClick(
+                props.action,
+                props.userId,
+                'block',
+                blockIcon[props.action][1]
+              )
             }
-            startIcon={<Avatar src='/captain-icon.svg' />}
+            startIcon={<Avatar src={blockIcon[props.action][0]} />}
           >
             BLOCK {props.action}
           </Button>
-        )}
-        <Button
-          color='success'
-          variant='contained'
-          onClick={() => handleClick(props.action, props.userId, 'pass')}
-        >
-          PASS
-        </Button>
-      </Box>
-    );
-  } else if (
-    props.phase === 'challengeCounterAction' &&
-    props.gameState.activity.counterActor === props.userId
-  ) {
-    buttons = (
-      <Box>
-        <Button
-          color='error'
-          variant='contained'
-          onClick={() => handleClick(props.action, props.userId, 'doubt')}
-        >
-          Doubt {props.gameState.activity.counterActorCard}
-        </Button>
-        <Button
-          color='success'
-          variant='contained'
-          onClick={() => handleClick(props.action, props.userId, 'pass')}
-        >
-          PASS
-        </Button>
-      </Box>
-    );
-  } else if (props.phase === 'lose-influence') {
-    const currentUser = props.gameState.users[props.userId];
-    buttons = (
-      <Box>
-        <Button
-          color='error'
-          variant='contained'
-          onClick={() => handleLoseInfluence('one')}
-        >
-          Lose {currentUser.cardOne}
-        </Button>
-        <Button
-          color='error'
-          variant='contained'
-          onClick={() => handleLoseInfluence('two')}
-        >
-          Lose {currentUser.cardTwo}
-        </Button>
-      </Box>
-    );
+          {props.action === 'steal' && (
+            <Button
+              color='error'
+              variant='contained'
+              onClick={() =>
+                handleClick(props.action, props.userId, 'block', 'captain')
+              }
+              startIcon={<Avatar src='/captain-icon.svg' />}
+            >
+              BLOCK {props.action}
+            </Button>
+          )}
+          <Button
+            color='success'
+            variant='contained'
+            onClick={() => handleClick(props.action, props.userId, 'pass')}
+          >
+            PASS
+          </Button>
+        </Box>
+      );
+    } else if (
+      props.phase === 'challengeCounterAction' &&
+      props.gameState.activity.counterActor === props.userId
+    ) {
+      buttons = (
+        <Box>
+          <Button
+            color='error'
+            variant='contained'
+            onClick={() => handleClick(props.action, props.userId, 'doubt')}
+          >
+            Doubt {props.gameState.activity.counterActorCard}
+          </Button>
+          <Button
+            color='success'
+            variant='contained'
+            onClick={() => handleClick(props.action, props.userId, 'pass')}
+          >
+            PASS
+          </Button>
+        </Box>
+      );
+    } else if (props.phase === 'lose-influence') {
+      const currentUser = props.gameState.users[props.userId];
+      buttons = (
+        <Box>
+          {currentUser.cardOneActive && (
+            <Button
+              color='error'
+              variant='contained'
+              onClick={() => handleLoseInfluence('one')}
+            >
+              Lose {currentUser.cardOne}
+            </Button>
+          )}
+          {currentUser.cardTwoActive && (
+            <Button
+              color='error'
+              variant='contained'
+              onClick={() => handleLoseInfluence('two')}
+            >
+              Lose {currentUser.cardTwo}
+            </Button>
+          )}
+        </Box>
+      );
+    }
   }
-
   return (
     <Card
       sx={{
@@ -212,6 +219,7 @@ export default function Player(props: Props) {
               display: 'flex',
               width: 'auto',
               maxHeight: '23vh',
+              opacity: props.cardOneActive ? 1 : 0.5,
             }}
             component='img'
             image={props.cardOne}
@@ -226,6 +234,7 @@ export default function Player(props: Props) {
               display: 'flex',
               width: 'auto',
               maxHeight: '23vh',
+              opacity: props.cardTwoActive ? 1 : 0.5,
             }}
             component='img'
             image={props.cardTwo}

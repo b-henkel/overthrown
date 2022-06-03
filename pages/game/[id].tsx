@@ -48,6 +48,10 @@ function GameBase() {
         console.log('lose-influence', data);
         setLoseInfluence(true);
       });
+      socket.on('unset-lose-influence', (data) => {
+        console.log('unset-lose-influence', data);
+        setLoseInfluence(false);
+      });
     });
   }, []);
 
