@@ -191,6 +191,7 @@ export default function Player(props: Props) {
     <Card
       sx={{
         height: '32vh',
+
         whiteSpace: 'nowrap',
         bgcolor: props.isActiveUser && 'primary.main',
       }}
@@ -212,32 +213,24 @@ export default function Player(props: Props) {
       >
         {props.cardOne && (
           <CardMedia
+            component='img'
             sx={{
-              ...props.style,
-              marginLeft: 0.5,
-              marginRight: 0.5,
-              display: 'flex',
-              width: 'auto',
-              maxHeight: '23vh',
+              maxWidth: '48%',
+              maxHeight: '24vh',
               opacity: props.cardOneActive ? 1 : 0.5,
             }}
-            component='img'
-            image={props.cardOne}
+            src={props.cardOne}
           />
         )}
         {props.cardTwo && (
           <CardMedia
+            component='img'
             sx={{
-              ...props.style,
-              marginLeft: 0.5,
-              marginRight: 0.5,
-              display: 'flex',
-              width: 'auto',
-              maxHeight: '23vh',
+              maxWidth: '48%',
+              maxHeight: '24vh',
               opacity: props.cardTwoActive ? 1 : 0.5,
             }}
-            component='img'
-            image={props.cardTwo}
+            src={props.cardTwo}
           />
         )}
       </Box>

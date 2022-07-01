@@ -2,6 +2,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { CardActionArea, Box } from '@mui/material';
+import { fontSize } from '@mui/system';
 
 // TODO This will become the Join/Create Game page
 
@@ -10,13 +11,22 @@ export default function Home() {
     <Box
       sx={{
         display: 'block',
-        marginTop: 10,
+        marginTop: '25vh',
         textAlign: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
-      <Box component='img' sx={{}} alt='characters' src='./splash.svg' />
-      <Typography variant='h1'>Welcome to Overthrown!</Typography>
-      <Card sx={{ maxWidth: 345, margin: 'auto' }}>
+      <Box
+        component='img'
+        sx={{ maxWidth: '90vw' }}
+        alt='characters'
+        src='./splash.svg'
+      />
+      <Typography sx={{ textAlign: 'center', fontSize: '5vh' }}>
+        Welcome to Overthrown!
+      </Typography>
+      <Card sx={{ maxWidth: '35vw', margin: 'auto' }}>
         <CardActionArea href='api/create'>
           <CardContent>
             <Typography gutterBottom variant='h5' component='div'>

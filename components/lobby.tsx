@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { GameObject } from '../game/types/game-types';
-
 import copy from 'copy-to-clipboard';
 import { textAlign } from '@mui/system';
 
@@ -28,7 +27,7 @@ export default function Lobby(props: Props) {
   const { id: gameId } = router.query;
   const [username, setUsername] = useState('');
 
-  const addUser = async () => {
+  const addUser = () => {
     // grab the text box's information
     // and then fire an http request
     if (props.socket) {
@@ -38,7 +37,7 @@ export default function Lobby(props: Props) {
       console.log('no socket available');
     }
   };
-  const startGame = async () => {
+  const startGame = () => {
     if (props.socket) {
       props.socket.emit('start-game', { gameId });
     } else {
@@ -58,8 +57,13 @@ export default function Lobby(props: Props) {
         textAlign: 'center',
       }}
     >
-      <Box component='img' sx={{}} alt='characters' src='../splash.svg' />
-      <Typography variant='h2'>Welcome to the Lobby!</Typography>
+      <Box
+        component='img'
+        sx={{ maxWidth: '90vw' }}
+        alt='characters'
+        src='../splash.svg'
+      />
+      <Typography sx={{ fontSize: '5vh' }}>Welcome to the Lobby!</Typography>
       <Typography sx={{ marginTop: 3 }} variant='h4'>
         Your Game ID:
       </Typography>

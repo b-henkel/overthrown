@@ -6,6 +6,8 @@ import { Card, Box } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import Avatar from '@mui/material/Avatar';
 import { Socket } from 'socket.io-client';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useState, useEffect } from 'react';
 
 type Props = {
   socket: Socket;
@@ -18,15 +20,26 @@ type Props = {
 };
 
 export default function Actions(props: Props) {
+  const [disabled, setDisabled] = useState(false);
+
+  useEffect(() => {
+    setDisabled(false);
+  }, [props.isActiveUser]);
+
   const handleClick = (value) => {
     // event.preventDefault();
-
+    setDisabled(true);
     props.socket.emit('action', {
       gameId: props.gameId,
       action: { type: value, target: null },
     });
   };
 
+  const orientation = useMediaQuery('(min-width:1080px)');
+  const iconsOnly = useMediaQuery('(max-width:480px)');
+  const avatarStyle = orientation
+    ? { width: '1.5vw', height: '1.5vw' }
+    : { width: '4vw', height: '4vw' };
   return (
     <Card sx={{ height: '32vh' }}>
       <CardContent>
@@ -43,30 +56,41 @@ export default function Actions(props: Props) {
           <Typography sx={{ fontSize: 18 }} color='text.primary'>
             General Actions
           </Typography>
-          <ButtonGroup variant='text' aria-label='text button group'>
+          <ButtonGroup
+            orientation={`${orientation ? `horizontal` : `vertical`}`}
+            size='small'
+            sx={{ maxWidth: '95%' }}
+            variant='text'
+            aria-label='text button group'
+          >
             <Button
               variant='outlined'
-              startIcon={<Avatar src='/banker-icon.svg' />}
+              startIcon={<Avatar sx={avatarStyle} src='/banker-icon.svg' />}
               onClick={() => handleClick('income')}
-              disabled={!props.isActiveUser || props.coinCount >= 10}
+              disabled={
+                !props.isActiveUser || props.coinCount >= 10 || disabled
+              }
             >
-              Income
+              {!iconsOnly && 'Income'}
             </Button>
             <Button
               variant='outlined'
-              startIcon={<Avatar src='/aid-icon.svg' />}
+              startIcon={<Avatar sx={avatarStyle} src='/aid-icon.svg' />}
               onClick={() => handleClick('foreignAid')}
-              disabled={!props.isActiveUser}
+              disabled={!props.isActiveUser || disabled}
             >
-              Foreign Aid
+              {!iconsOnly && ' Foreign Aid'}
             </Button>
             <Button
               variant='outlined'
-              startIcon={<Avatar src='/assassin-icon.svg' />}
-              onClick={() => props.targetOtherPlayers('overThrow')}
-              disabled={!props.isActiveUser || props.coinCount < 7}
+              startIcon={<Avatar sx={avatarStyle} src='/assassin-icon.svg' />}
+              onClick={() => {
+                props.targetOtherPlayers('overThrow');
+                setDisabled(true);
+              }}
+              disabled={!props.isActiveUser || props.coinCount < 7 || disabled}
             >
-              Overthrow
+              {!iconsOnly && 'Overthrow'}
             </Button>
           </ButtonGroup>
           <Typography sx={{ fontSize: 18 }} color='text.primary'>
@@ -75,36 +99,43 @@ export default function Actions(props: Props) {
           <ButtonGroup variant='text' aria-label='text button group'>
             <Button
               variant='outlined'
-              startIcon={<Avatar src='/duke-icon.svg' />}
+              startIcon={<Avatar sx={avatarStyle} src='/duke-icon.svg' />}
               onClick={() => handleClick('tax')}
-              disabled={!props.isActiveUser}
+              disabled={!props.isActiveUser || disabled}
             >
-              Tax
+              {!iconsOnly && 'Tax'}
             </Button>
             <Button
               variant='outlined'
-              startIcon={<Avatar src='/assassin-icon.svg' />}
-              onClick={() => props.targetOtherPlayers('assassinate')}
-              disabled={!props.isActiveUser || props.coinCount < 3}
+              startIcon={<Avatar sx={avatarStyle} src='/assassin-icon.svg' />}
+              onClick={() => {
+                props.targetOtherPlayers('assassinate');
+                setDisabled(true);
+              }}
+              disabled={!props.isActiveUser || props.coinCount < 3 || disabled}
             >
-              Assasinate
+              {!iconsOnly && 'Assasinate'}
             </Button>
           </ButtonGroup>
           <ButtonGroup variant='text' aria-label='text button group'>
             <Button
               variant='outlined'
-              startIcon={<Avatar src='/captain-icon.svg' />}
-              disabled={!props.isActiveUser}                            onClick={() => props.targetOtherPlayers('steal')}
+              startIcon={<Avatar sx={avatarStyle} src='/captain-icon.svg' />}
+              disabled={!props.isActiveUser || disabled}
+              onClick={() => {
+                props.targetOtherPlayers('steal');
+                setDisabled(true);
+              }}
             >
-              Steal
+              {!iconsOnly && 'Steal'}
             </Button>
             <Button
               variant='outlined'
-              startIcon={<Avatar src='/ambassador-icon.svg' />}
-              disabled={!props.isActiveUser}
+              startIcon={<Avatar sx={avatarStyle} src='/ambassador-icon.svg' />}
+              disabled={!props.isActiveUser || disabled}
               onClick={() => handleClick('exchange')}
             >
-              Exchange
+              {!iconsOnly && 'Exchange'}
             </Button>
           </ButtonGroup>
         </Box>
