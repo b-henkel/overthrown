@@ -153,6 +153,7 @@ export default function Player(props: Props) {
     <Card
       sx={{
         height: '32vh',
+
         whiteSpace: 'nowrap',
         bgcolor: props.isActiveUser && 'primary.main',
       }}
@@ -173,32 +174,42 @@ export default function Player(props: Props) {
         }}
       >
         {props.cardOne && (
-          <CardMedia
-            sx={{
-              ...props.style,
-              marginLeft: 0.5,
-              marginRight: 0.5,
-              display: 'flex',
-              width: 'auto',
-              maxHeight: '23vh',
-            }}
+          <Box
             component='img'
-            image={props.cardOne}
+            sx={{ maxWidth: '48%', maxHeight: '24vh' }}
+            src={props.cardOne}
           />
+          // <CardMedia
+          //   sx={{
+          //     ...props.style,
+          //     marginLeft: 0.5,
+          //     marginRight: 0.5,
+          //     display: 'flex',
+          //     height: '100%',
+          //     width: '100%',
+          //   }}
+          //   component='img'
+          //   image={props.cardOne}
+          // />
         )}
         {props.cardTwo && (
-          <CardMedia
-            sx={{
-              ...props.style,
-              marginLeft: 0.5,
-              marginRight: 0.5,
-              display: 'flex',
-              width: 'auto',
-              maxHeight: '23vh',
-            }}
+          <Box
             component='img'
-            image={props.cardTwo}
+            sx={{ maxWidth: '48%', maxHeight: '24vh' }}
+            src={props.cardTwo}
           />
+          // <CardMedia
+          //   sx={{
+          //     ...props.style,
+          //     marginLeft: 0.5,
+          //     marginRight: 0.5,
+          //     display: 'flex',
+          //     height: '100%',
+          //     width: '100%',
+          //   }}
+          //   component='img'
+          //   image={props.cardTwo}
+          // />
         )}
       </Box>
       {buttons}

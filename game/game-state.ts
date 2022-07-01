@@ -19,12 +19,13 @@ export const getGameState = (gameId) => {
 export const initGameState = (gameIdOverride = null) => {
   // Create, store, and return a new specific state object
   const gameId = gameIdOverride || uuidv4();
-  console.log(`New Game Initialized ${gameId}`);
+  console.log(`New Game Initializing ${gameId}`);
   const newGameState: GameObject = {
     id: gameId,
     users: {},
     activity: null,
     started: false,
+    ended: false,
     deck: [],
     currentPlayer: null,
   };

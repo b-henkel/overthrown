@@ -32,9 +32,11 @@ export type GameObject = {
   id: string;
   users: Users;
   started: boolean;
+  ended: boolean;
   deck: string[];
   currentPlayer: string;
   activity: Activity;
+  winner?: string;
 };
 
 export type Action = {

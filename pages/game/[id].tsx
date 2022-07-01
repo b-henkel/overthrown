@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import io, { Socket } from 'socket.io-client';
 import Game from '../../components/game';
 import Lobby from '../../components/lobby';
+import GameOver from '../../components/game-over';
 import { GameObject } from '../../game/types/game-types';
 
 // TODO the initial game object with users should be marked with some started:False flag
@@ -54,16 +55,18 @@ function GameBase() {
   }, [socket, gameId]);
 
   // TODO make sure the fetched game id is valid
+  let comp: JSX.Element;
+  if (gameState) {
+    if (gameState.started) {
+      comp = <Game socket={socket} gameState={gameState} userId={userId} />;
+    } else if (gameState.ended) {
+      comp = <GameOver gameState={gameState} userId={userId} />;
+    } else {
+      comp = <Lobby socket={socket} gameState={gameState} userId={userId} />;
+    }
+  }
 
-  return (
-    <>
-      {gameState && gameState.started ? (
-        <Game socket={socket} gameState={gameState} userId={userId} />
-      ) : (
-        <Lobby socket={socket} gameState={gameState} userId={userId} />
-      )}
-    </>
-  );
+  return <>{comp}</>;
 }
 
 export default GameBase;
