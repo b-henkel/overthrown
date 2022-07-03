@@ -28,7 +28,8 @@ type Props = {
   phase?: string;
   gameId?: string;
   gameState?: GameObject;
-  loseInfluence?: boolean;
+  loseInfluenceTarget?: string;
+  isPrimaryPlayerTile: boolean;
 };
 
 export default function Player(props: Props) {
@@ -57,13 +58,13 @@ export default function Player(props: Props) {
     } else {
       gameState.users[props.userId].cardTwoActive = false;
     }
-    props.socket.emit('lose-influence', {
+    props.socket.emit('loseInfluence', {
       gameId: props.gameState.id,
       gameObj: gameState,
     });
   };
   let buttons;
-  if (!props.loseInfluence) {
+  if (!props.isPrimaryPlayerTile) {
     if (props.phase === 'action') {
       if (['overThrow', 'assassinate', 'steal'].includes(props.action)) {
         buttons = (
@@ -161,32 +162,36 @@ export default function Player(props: Props) {
           </Button>
         </Box>
       );
-    } else if (props.phase === 'lose-influence') {
-      const currentUser = props.gameState.users[props.userId];
-      buttons = (
-        <Box>
-          {currentUser.cardOneActive && (
-            <Button
-              color='error'
-              variant='contained'
-              onClick={() => handleLoseInfluence('one')}
-            >
-              Lose {currentUser.cardOne}
-            </Button>
-          )}
-          {currentUser.cardTwoActive && (
-            <Button
-              color='error'
-              variant='contained'
-              onClick={() => handleLoseInfluence('two')}
-            >
-              Lose {currentUser.cardTwo}
-            </Button>
-          )}
-        </Box>
-      );
     }
+  } else if (
+    props.phase === 'loseInfluence' &&
+    props.loseInfluenceTarget === props.userId
+  ) {
+    const currentUser = props.gameState.users[props.userId];
+    buttons = (
+      <Box>
+        {currentUser.cardOneActive && (
+          <Button
+            color='error'
+            variant='contained'
+            onClick={() => handleLoseInfluence('one')}
+          >
+            Lose {currentUser.cardOne}
+          </Button>
+        )}
+        {currentUser.cardTwoActive && (
+          <Button
+            color='error'
+            variant='contained'
+            onClick={() => handleLoseInfluence('two')}
+          >
+            Lose {currentUser.cardTwo}
+          </Button>
+        )}
+      </Box>
+    );
   }
+
   return (
     <Card
       sx={{
@@ -212,7 +217,7 @@ export default function Player(props: Props) {
         }}
       >
         {props.cardOne && (
-          <CardMedia
+          <Box
             component='img'
             sx={{
               maxWidth: '48%',
@@ -223,7 +228,7 @@ export default function Player(props: Props) {
           />
         )}
         {props.cardTwo && (
-          <CardMedia
+          <Box
             component='img'
             sx={{
               maxWidth: '48%',

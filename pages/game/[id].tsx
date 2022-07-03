@@ -14,7 +14,6 @@ function GameBase() {
   const [socket, setSocket] = useState<Socket | undefined>(null);
   const [gameState, setGameState] = useState<GameObject | undefined>(null);
   const [userId, setUserId] = useState<string | undefined>(null);
-  const [loseInfluence, setLoseInfluence] = useState<boolean>(false);
 
   useEffect(() => {
     fetch('/api/socketio').finally(() => {
@@ -44,15 +43,6 @@ function GameBase() {
       socket.on('disconnect', () => {
         console.log('disconnect');
       });
-
-      socket.on('lose-influence', (data) => {
-        console.log('lose-influence', data);
-        setLoseInfluence(true);
-      });
-      socket.on('unset-lose-influence', (data) => {
-        console.log('unset-lose-influence', data);
-        setLoseInfluence(false);
-      });
     });
   }, []);
 
@@ -69,12 +59,7 @@ function GameBase() {
   let comp: JSX.Element;
   if (gameState) {
     if (gameState.started) {
-      comp = <Game
-      socket={socket}
-      gameState={gameState}
-      userId={userId}
-      loseInfluence={loseInfluence}
-    />
+      comp = <Game socket={socket} gameState={gameState} userId={userId} />;
     } else if (gameState.ended) {
       comp = <GameOver gameState={gameState} userId={userId} />;
     } else {
