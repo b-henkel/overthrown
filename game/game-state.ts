@@ -18,10 +18,10 @@ import {
   NEXT_TURN,
 } from './phase-action-order';
 
-function phaseToFunction(func) {
+export function phaseToFunction(func) {
   // console.log('phase to func received', func);
   switch (func) {
-    case 'resolveAction':
+    case RESOLVE_ACTION:
       return resolveAction;
     case RESOLVE_CHALLENGE_ACTION:
       return resolveChallengeAction;
@@ -29,6 +29,8 @@ function phaseToFunction(func) {
       return resolveCounterAction;
     case RESOLVE_CHALLENGE_COUNTER_ACTION:
       return resolveChallengeCounterAction;
+    case NEXT_TURN:
+      return handleNextTurn;
     default:
       return null;
   }
@@ -136,13 +138,13 @@ const nextTurn = (currentPlayer, gameObj: GameObject) => {
   gameObj.activity.phase = ACTION;
 };
 
-export const handleNextTurn = (socket, gameId, action) => {
+export function handleNextTurn(socket, gameId, action) {
   console.log('*** handleNextTurn');
   const gameObj = loadGlobalGameState()[gameId];
   nextTurn(gameObj.currentPlayer, gameObj);
   pushCacheState(socket, gameId, gameObj);
   console.log(' ------- ');
-};
+}
 
 export function handleAction(socket, gameId, action: Action) {
   console.log('*** handleAction');
@@ -180,16 +182,13 @@ export function handleAction(socket, gameId, action: Action) {
 export function resolveAction(socket, gameId, action: Action) {
   console.log('*** resolveAction');
   const gameObj = loadGlobalGameState()[gameId];
-  if (action.type === 'income') {
-    gameObj.users[gameObj.currentPlayer].coins += 1;
-  } else if (action.type === 'foreignAid') {
-    gameObj.users[gameObj.currentPlayer].coins += 2;
-  } else if (action.type === 'overThrow') {
-    gameObj.users[gameObj.currentPlayer].coins -= 7;
-  } else if (action.type === 'tax') {
-    gameObj.users[gameObj.currentPlayer].coins += 3;
-  } else if (action.type === 'assassinate') {
-    gameObj.users[gameObj.currentPlayer].coins -= 3;
+  const actionLogic = actions[action.type];
+
+  if (action.type !== 'steal') {
+    gameObj.users[gameObj.currentPlayer].coins += actionLogic.coinExchange;
+  }
+
+  if (action.type === 'assassinate') {
     const targetUser = gameObj.users[gameObj.activity.actionTarget];
     gameObj.activity.nextPhase = NEXT_TURN;
     gameObj.activity.phase = LOSE_INFLUENCE;
@@ -202,14 +201,13 @@ export function resolveAction(socket, gameId, action: Action) {
     const targetUser = gameObj.users[gameObj.activity.actionTarget];
     if (targetUser.coins >= 2) {
       targetUser.coins -= 2;
-      gameObj.users[gameObj.currentPlayer].coins += 2;
+      gameObj.users[gameObj.currentPlayer].coins += actionLogic.coinExchange;
     } else {
       gameObj.users[gameObj.currentPlayer].coins += targetUser.coins;
       targetUser.coins = 0;
     }
-  } else {
-    throw new Error(`Invalid Action Type Received! ${JSON.stringify(action)}`);
   }
+
   nextTurn(gameObj.currentPlayer, gameObj);
   pushCacheState(socket, gameId, gameObj);
   console.log(' ------- ');
@@ -225,8 +223,16 @@ const processChallenge = (
   action,
   gameObj: GameObject
 ) => {
+  console.log(
+    'Process challenge called',
+    challengingUserId,
+    defendingUserId,
+    claimedCard,
+    expectedReason,
+    originatingPhase
+  );
   const actionLogic = actions[action.type];
-  console.log('processChallenge calling getSetNextPhase');
+  // console.log('processChallenge calling getSetNextPhase');
   const nextPhase = getSetNextPhase(originatingPhase, actionLogic, gameObj);
   const nextFunc = phaseToFunction(nextPhase);
 
@@ -234,6 +240,11 @@ const processChallenge = (
     const defendingUser = gameObj.users[defendingUserId];
     const defendingUserCardOne = defendingUser.cardOne;
     const defendingUserCardTwo = defendingUser.cardTwo;
+    console.log('DefendingUser', JSON.stringify(defendingUser));
+    console.log(
+      'ChallengingUser',
+      JSON.stringify(gameObj.users[challengingUserId])
+    );
     // TODO check if user reaches game over state and set participant flag to false
     if (
       defendingUserCardOne === claimedCard ||
@@ -243,7 +254,7 @@ const processChallenge = (
       // Swap the actor or counter actors card, and cause the challenger to lose influence.
       // Game should move forward as normal and the action or counter action should complete
       // change claimed card to a new card from deck and shuffle
-      console.log('Action/Counteraction was Legit! Challenger loses a card');
+      console.log('Defending User was valid, challenger should lose a card');
       const { deck, cardOut } = swap(gameObj.deck, claimedCard);
       gameObj.deck = deck;
       if (defendingUserCardOne === claimedCard) {
@@ -304,8 +315,8 @@ export function handleChallengeAction(socket, gameId, action: Action) {
   console.log('*** handleChallengeAction');
   const gameObj = loadGlobalGameState()[gameId];
   processChallenge(
-    gameObj.currentPlayer,
     socket.id,
+    gameObj.currentPlayer,
     translateActionToCard(gameObj.activity.action),
     'challenge',
     CHALLENGE_ACTION,

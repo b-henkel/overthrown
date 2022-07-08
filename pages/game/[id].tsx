@@ -37,7 +37,6 @@ function GameBase() {
       socket.on('state-update', (state) => {
         console.log('Update state:', state);
         setGameState(state);
-        // setLoseInfluence(false);
       });
 
       socket.on('disconnect', () => {

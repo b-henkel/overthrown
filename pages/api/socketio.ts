@@ -8,12 +8,8 @@ import {
   handleChallengeAction,
   handleCounterAction,
   handleChallengeCounterAction,
+  phaseToFunction,
   pushCacheState,
-  resolveAction,
-  resolveChallengeAction,
-  resolveCounterAction,
-  resolveChallengeCounterAction,
-  handleNextTurn,
 } from '../../game/game-state';
 
 import {
@@ -21,13 +17,8 @@ import {
   getSetNextPhase,
   ACTION,
   CHALLENGE_ACTION,
-  RESOLVE_CHALLENGE_ACTION,
   COUNTER_ACTION,
   CHALLENGE_COUNTER_ACTION,
-  RESOLVE_CHALLENGE_COUNTER_ACTION,
-  RESOLVE_COUNTER_ACTION,
-  RESOLVE_ACTION,
-  NEXT_TURN,
   LOSE_INFLUENCE,
 } from '../../game/phase-action-order';
 import { GameObject } from '../../game/types/game-types';
@@ -88,8 +79,8 @@ const ioHandler = (req, res) => {
             'Back end loseInfluence socket call received, following action',
             data.gameObj.activity.action
           );
+          // We quickly redistribute the lose influence choices that we get back.
           pushCacheState(socket, data.gameId, data.gameObj);
-          // socket.emit('unset-lose-influence', {});
 
           const nextPhase = getSetNextPhase(
             data.gameObj.activity.phase,
@@ -98,25 +89,15 @@ const ioHandler = (req, res) => {
             false
           );
           const type = data.gameObj.activity.action;
-          switch (nextPhase) {
-            case RESOLVE_ACTION:
-              resolveAction(socket, data.gameId, { type });
-              break;
-            case RESOLVE_CHALLENGE_ACTION:
-              resolveChallengeAction(socket, data.gameId, { type });
-              break;
-            case RESOLVE_COUNTER_ACTION:
-              resolveCounterAction(socket, data.gameId, { type });
-              break;
-            case RESOLVE_CHALLENGE_COUNTER_ACTION:
-              // pretty sure this is not a thing
-              resolveChallengeCounterAction(socket, data.gameId, { type });
-              break;
-            case NEXT_TURN:
-              handleNextTurn(socket, data.gameId, { type });
-              break;
-            default:
-              console.log('Unexpected phase encountered');
+          const nextFunc = phaseToFunction(nextPhase);
+          if (nextFunc) {
+            nextFunc(socket, data.gameId, { type });
+          } else {
+            data.gameObj.activity.phase = nextPhase;
+            pushCacheState(socket, data.gameId, data.gameObj);
+            console.log(
+              `Moving to ${nextPhase}, following ${data.gameObj.activity.phase}`
+            );
           }
         }
       );
