@@ -8,7 +8,20 @@ import {
   handleChallengeAction,
   handleCounterAction,
   handleChallengeCounterAction,
+  phaseToFunction,
+  pushCacheState,
 } from '../../game/game-state';
+
+import {
+  actions,
+  getSetNextPhase,
+  ACTION,
+  CHALLENGE_ACTION,
+  COUNTER_ACTION,
+  CHALLENGE_COUNTER_ACTION,
+  LOSE_INFLUENCE,
+} from '../../game/phase-action-order';
+import { GameObject } from '../../game/types/game-types';
 
 const ioHandler = (req, res) => {
   if (!res.socket.server.io) {
@@ -41,25 +54,53 @@ const ioHandler = (req, res) => {
         // socket.to(data.gameId).emit("state-update", updatedGameState);
       });
 
-      socket.on('action', (data) => {
+      socket.on(ACTION, (data) => {
         // depending on the action type, call some function in game-state.js and pass the socket
         // so that it can re-emit the updated state
         handleAction(socket, data.gameId, data.action);
       });
 
-      socket.on('challengeAction', (data) => {
+      socket.on(CHALLENGE_ACTION, (data) => {
         //
         handleChallengeAction(socket, data.gameId, data.action);
       });
 
-      socket.on('counterAction', (data) => {
+      socket.on(COUNTER_ACTION, (data) => {
         handleCounterAction(socket, data.gameId, data.action);
       });
 
-      socket.on('challengeCounterAction', (data) => {
+      socket.on(CHALLENGE_COUNTER_ACTION, (data) => {
         handleChallengeCounterAction(socket, data.gameId, data.action);
       });
+      socket.on(
+        LOSE_INFLUENCE,
+        (data: { gameId: string; gameObj: GameObject }) => {
+          console.log(
+            'Back end loseInfluence socket call received, following action',
+            data.gameObj.activity.action
+          );
+          // We quickly redistribute the lose influence choices that we get back.
+          pushCacheState(socket, data.gameId, data.gameObj);
 
+          const nextPhase = getSetNextPhase(
+            data.gameObj.activity.phase,
+            actions[data.gameObj.activity.action],
+            data.gameObj,
+            false
+          );
+          const type = data.gameObj.activity.action;
+          const nextFunc = phaseToFunction(nextPhase);
+          if (nextFunc) {
+            nextFunc(socket, data.gameId, { type });
+          } else {
+            data.gameObj.activity.phase = nextPhase;
+            pushCacheState(socket, data.gameId, data.gameObj);
+            console.log(
+              `Moving to ${nextPhase}, following ${data.gameObj.activity.phase}`
+            );
+          }
+        }
+      );
       socket.on('disconnect', () => {
         removeUser(socket);
       });

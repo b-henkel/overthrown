@@ -114,7 +114,7 @@ export default function Actions(props: Props) {
               }}
               disabled={!props.isActiveUser || props.coinCount < 3 || disabled}
             >
-              {!iconsOnly && 'Assasinate'}
+              {!iconsOnly && 'Assassinate'}
             </Button>
           </ButtonGroup>
           <ButtonGroup variant='text' aria-label='text button group'>

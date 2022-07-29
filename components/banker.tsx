@@ -31,6 +31,7 @@ export default function Banker(props: Props) {
               display: 'inline',
               width: 'auto',
               height: '32vh',
+              opacity: '0.2',
             }}
             component='img'
             image='/banker.svg'
