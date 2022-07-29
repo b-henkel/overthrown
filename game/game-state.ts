@@ -103,6 +103,7 @@ export const startGame = (socket, gameId) => {
     user.cardTwo = hand.cardTwo;
     user.cardOneActive = true;
     user.cardTwoActive = true;
+    user.participant = true;
   });
   const firstPlayer = getFirstPlayer(gameObj.users);
   gameObj.currentPlayer = firstPlayer;
@@ -132,7 +133,18 @@ const resetActivity = (gameObj) => {
   };
 };
 
+const checkLastInfluence = (user: User) => {
+  if (!user.cardOneActive || !user.cardTwoActive) {
+    user.participant = false;
+    user.cardOneActive = false;
+    user.cardTwoActive = false;
+    return true;
+  }
+  return false;
+};
+
 const nextTurn = (currentPlayer, gameObj: GameObject) => {
+  // TODO: Check if there is only one participant left in game.
   resetActivity(gameObj);
   gameObj.currentPlayer = getNextPlayer(currentPlayer, gameObj.users);
   gameObj.activity.phase = ACTION;
@@ -160,9 +172,14 @@ export function handleAction(socket, gameId, action: Action) {
   if (action.type === 'overThrow') {
     // TODO remove opponent player when no more cards are available
     const targetUser = gameObj.users[action.target];
-    gameObj.activity.phase = LOSE_INFLUENCE;
-    gameObj.activity.originalPhase = ACTION;
-    gameObj.activity.loseInfluenceTarget = targetUser.id;
+    const lastInfluence = checkLastInfluence(targetUser);
+    if (lastInfluence) {
+      nextTurn(gameObj.currentPlayer, gameObj);
+    } else {
+      gameObj.activity.phase = LOSE_INFLUENCE;
+      gameObj.activity.originalPhase = ACTION;
+      gameObj.activity.loseInfluenceTarget = targetUser.id;
+    }
     pushCacheState(socket, gameId, gameObj);
     return;
   }
@@ -190,12 +207,16 @@ export function resolveAction(socket, gameId, action: Action) {
 
   if (action.type === 'assassinate') {
     const targetUser = gameObj.users[gameObj.activity.actionTarget];
-    gameObj.activity.nextPhase = NEXT_TURN;
-    gameObj.activity.phase = LOSE_INFLUENCE;
-    gameObj.activity.originalPhase = RESOLVE_ACTION;
-    gameObj.activity.loseInfluenceTarget = targetUser.id;
+    const lastInfluence = checkLastInfluence(targetUser);
+    if (lastInfluence) {
+      nextTurn(gameObj.currentPlayer, gameObj);
+    } else {
+      gameObj.activity.nextPhase = NEXT_TURN;
+      gameObj.activity.phase = LOSE_INFLUENCE;
+      gameObj.activity.originalPhase = RESOLVE_ACTION;
+      gameObj.activity.loseInfluenceTarget = targetUser.id;
+    }
     pushCacheState(socket, gameId, gameObj);
-
     return;
   } else if (action.type === 'steal') {
     const targetUser = gameObj.users[gameObj.activity.actionTarget];
@@ -238,8 +259,12 @@ const processChallenge = (
 
   if (action.response === expectedReason) {
     const defendingUser = gameObj.users[defendingUserId];
-    const defendingUserCardOne = defendingUser.cardOne;
-    const defendingUserCardTwo = defendingUser.cardTwo;
+    const defendingUserCardOne = defendingUser.cardOneActive
+      ? defendingUser.cardOne
+      : null;
+    const defendingUserCardTwo = defendingUser.cardTwoActive
+      ? defendingUser.cardTwo
+      : null;
     console.log('DefendingUser', JSON.stringify(defendingUser));
     console.log(
       'ChallengingUser',
@@ -262,10 +287,18 @@ const processChallenge = (
       } else {
         defendingUser.cardTwo = cardOut;
       }
+      const lastInfluence = checkLastInfluence(
+        gameObj.users[challengingUserId]
+      );
+      if (lastInfluence) {
+        nextTurn(gameObj.currentPlayer, gameObj);
+      }
       //remove card from challenger
-      gameObj.activity.phase = LOSE_INFLUENCE;
-      gameObj.activity.originalPhase = originatingPhase;
-      gameObj.activity.loseInfluenceTarget = challengingUserId;
+      else {
+        gameObj.activity.phase = LOSE_INFLUENCE;
+        gameObj.activity.originalPhase = originatingPhase;
+        gameObj.activity.loseInfluenceTarget = challengingUserId;
+      }
       pushCacheState(socket, gameObj.id, gameObj);
       console.log(' ------- ');
       return;
@@ -275,10 +308,15 @@ const processChallenge = (
       console.log(
         'Challenger was right! Original actor or counteractor loses a card'
       );
-      gameObj.activity.nextPhase = NEXT_TURN;
-      gameObj.activity.phase = LOSE_INFLUENCE;
-      gameObj.activity.originalPhase = originatingPhase;
-      gameObj.activity.loseInfluenceTarget = defendingUserId;
+      const lastInfluence = checkLastInfluence(defendingUser);
+      if (lastInfluence) {
+        nextTurn(gameObj.currentPlayer, gameObj);
+      } else {
+        gameObj.activity.nextPhase = NEXT_TURN;
+        gameObj.activity.phase = LOSE_INFLUENCE;
+        gameObj.activity.originalPhase = originatingPhase;
+        gameObj.activity.loseInfluenceTarget = defendingUserId;
+      }
       pushCacheState(socket, gameObj.id, gameObj);
       console.log(' ------- ');
       return;

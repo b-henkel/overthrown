@@ -26,6 +26,11 @@ export default function Actions(props: Props) {
     setDisabled(false);
   }, [props.isActiveUser]);
 
+  let basicDisabled = false;
+  if (!props.isActiveUser || props.coinCount >= 10 || disabled) {
+    basicDisabled = true;
+  }
+
   const handleClick = (value) => {
     // event.preventDefault();
     setDisabled(true);
@@ -67,9 +72,7 @@ export default function Actions(props: Props) {
               variant='outlined'
               startIcon={<Avatar sx={avatarStyle} src='/banker-icon.svg' />}
               onClick={() => handleClick('income')}
-              disabled={
-                !props.isActiveUser || props.coinCount >= 10 || disabled
-              }
+              disabled={basicDisabled}
             >
               {!iconsOnly && 'Income'}
             </Button>
@@ -77,7 +80,7 @@ export default function Actions(props: Props) {
               variant='outlined'
               startIcon={<Avatar sx={avatarStyle} src='/aid-icon.svg' />}
               onClick={() => handleClick('foreignAid')}
-              disabled={!props.isActiveUser || disabled}
+              disabled={basicDisabled}
             >
               {!iconsOnly && ' Foreign Aid'}
             </Button>
@@ -101,7 +104,7 @@ export default function Actions(props: Props) {
               variant='outlined'
               startIcon={<Avatar sx={avatarStyle} src='/duke-icon.svg' />}
               onClick={() => handleClick('tax')}
-              disabled={!props.isActiveUser || disabled}
+              disabled={basicDisabled}
             >
               {!iconsOnly && 'Tax'}
             </Button>
@@ -112,7 +115,7 @@ export default function Actions(props: Props) {
                 props.targetOtherPlayers('assassinate');
                 setDisabled(true);
               }}
-              disabled={!props.isActiveUser || props.coinCount < 3 || disabled}
+              disabled={props.coinCount < 3 || basicDisabled}
             >
               {!iconsOnly && 'Assassinate'}
             </Button>
@@ -121,7 +124,7 @@ export default function Actions(props: Props) {
             <Button
               variant='outlined'
               startIcon={<Avatar sx={avatarStyle} src='/captain-icon.svg' />}
-              disabled={!props.isActiveUser || disabled}
+              disabled={basicDisabled}
               onClick={() => {
                 props.targetOtherPlayers('steal');
                 setDisabled(true);
@@ -132,7 +135,7 @@ export default function Actions(props: Props) {
             <Button
               variant='outlined'
               startIcon={<Avatar sx={avatarStyle} src='/ambassador-icon.svg' />}
-              disabled={!props.isActiveUser || disabled}
+              disabled={basicDisabled}
               onClick={() => handleClick('exchange')}
             >
               {!iconsOnly && 'Exchange'}
