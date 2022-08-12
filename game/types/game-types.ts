@@ -13,6 +13,7 @@ export type User = {
   cardTwoActive?: boolean;
   number?: number;
   participant?: boolean;
+  icon?: string;
 };
 
 export type Users = {
@@ -41,7 +42,7 @@ export type GameObject = {
   deck: string[];
   currentPlayer: string;
   activity: Activity;
-  winner?: string;
+  winner?: User;
 };
 
 export type Action = {

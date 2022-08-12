@@ -86,6 +86,9 @@ export const addUser = (socket, gameId, user: User) => {
       cardOne: null,
       cardTwo: null,
       number: Object.keys(gameObj.users).length + 1,
+      icon: `https://thispersondoesnotexist.xyz/cats/${Math.floor(
+        Math.random() * 4999
+      )}.jpg`,
     };
   }
   console.log(JSON.stringify(gameObj));
@@ -145,6 +148,15 @@ const checkLastInfluence = (user: User) => {
 
 const nextTurn = (currentPlayer, gameObj: GameObject) => {
   // TODO: Check if there is only one participant left in game.
+  let participants = Object.values(gameObj.users).filter(
+    (user) => user.participant
+  );
+  if (participants.length < 2) {
+    gameObj.ended = true;
+    gameObj.started = false;
+    gameObj.winner = participants[0];
+  }
+
   resetActivity(gameObj);
   gameObj.currentPlayer = getNextPlayer(currentPlayer, gameObj.users);
   gameObj.activity.phase = ACTION;
@@ -170,7 +182,6 @@ export function handleAction(socket, gameId, action: Action) {
   const nextPhase = getSetNextPhase(ACTION, actionLogic, gameObj);
   const nextFunc = phaseToFunction(nextPhase);
   if (action.type === 'overThrow') {
-    // TODO remove opponent player when no more cards are available
     const targetUser = gameObj.users[action.target];
     const lastInfluence = checkLastInfluence(targetUser);
     if (lastInfluence) {
@@ -233,6 +244,10 @@ export function resolveAction(socket, gameId, action: Action) {
   pushCacheState(socket, gameId, gameObj);
   console.log(' ------- ');
 }
+
+const getParticipants = (gameObj: GameObject) => {
+  return Object.values(gameObj.users).filter((user) => user.participant);
+};
 
 const processChallenge = (
   challengingUserId,
@@ -326,7 +341,7 @@ const processChallenge = (
 
     if (
       gameObj.activity.passingUsers.length ===
-      Object.keys(gameObj.users).length - 1
+      getParticipants(gameObj).length - 1
     ) {
       console.log('Moving forward to nextFunc', nextFunc);
       gameObj.activity.passingUsers = [];
@@ -394,7 +409,7 @@ export function handleCounterAction(socket, gameId, action: Action) {
 
     if (
       gameObj.activity.passingUsers.length ===
-      Object.keys(gameObj.users).length - 1
+      getParticipants(gameObj).length - 1
     ) {
       gameObj.activity.passingUsers = [];
       resolveAction(socket, gameId, action);

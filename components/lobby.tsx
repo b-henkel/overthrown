@@ -10,6 +10,7 @@ import {
   TextField,
   Paper,
   InputBase,
+  Avatar,
 } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { GameObject } from '../game/types/game-types';
@@ -107,7 +108,13 @@ export default function Lobby(props: Props) {
       >
         {props.gameState &&
           Object.entries(props.gameState.users).map(([userID, userObj]) => {
-            return <ListItem>&rarr; {userObj.name}</ListItem>;
+            return (
+              <ListItem>
+                &rarr;
+                <Avatar src={userObj.icon} />
+                {userObj.name}
+              </ListItem>
+            );
           })}
       </List>
       <Button

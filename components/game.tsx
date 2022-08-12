@@ -34,6 +34,7 @@ export default function Game(props: Props) {
   const targetOtherPlayers = (action) => {
     setTargetedAction(action);
   };
+  const currentUser = props.gameState.users[props.userId];
 
   const setUpOtherPlayers = () => {
     const playerCount = Object.keys(props.gameState.users).length - 1;
@@ -122,13 +123,14 @@ export default function Game(props: Props) {
             isPrimaryPlayerTile={false}
             gameId={props.gameState.id}
             gameState={props.gameState}
+            icon={user ? user.icon : null}
+            participant={currentUser.participant}
           />
         </Grid>
       );
     });
     return gridItems;
   };
-  const currentUser = props.gameState.users[props.userId];
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2} columns={3} justifyContent={'center'}>
@@ -154,6 +156,8 @@ export default function Game(props: Props) {
             loseInfluenceTarget={props.gameState.activity.loseInfluenceTarget}
             isPrimaryPlayerTile={true}
             socket={props.socket}
+            icon={currentUser.icon}
+            participant={currentUser.participant}
           />
         </Grid>
         <Grid item xs={1}>

@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import { GameObject } from '../game/types/game-types';
 import { Socket } from 'socket.io-client';
 import Avatar from '@mui/material/Avatar';
+import { useState, useEffect } from 'react';
 
 // TODO fix card spanning issue
 // Add coin count to component
@@ -30,15 +31,24 @@ type Props = {
   gameState?: GameObject;
   loseInfluenceTarget?: string;
   isPrimaryPlayerTile: boolean;
+  icon?: string;
+  participant: boolean;
 };
 
 export default function Player(props: Props) {
+  const [disabled, setDisabled] = useState(false);
+
+  useEffect(() => {
+    setDisabled(false);
+  }, [props.phase]);
+
   const handleClick = (
     action: string,
     targetPlayer: string,
     response: string,
     counterActorCard: string = null
   ) => {
+    setDisabled(true);
     console.log('target player action', targetPlayer, action);
     // event.preventDefault();
     props.socket.emit(props.phase, {
@@ -64,7 +74,7 @@ export default function Player(props: Props) {
     });
   };
   let buttons;
-  if (!props.isPrimaryPlayerTile) {
+  if (!props.isPrimaryPlayerTile && props.participant) {
     if (props.phase === 'action') {
       if (['overThrow', 'assassinate', 'steal'].includes(props.action)) {
         buttons = (
@@ -72,6 +82,7 @@ export default function Player(props: Props) {
             color='error'
             variant='contained'
             onClick={() => handleClick(props.action, props.userId, null)}
+            disabled={disabled}
           >
             {props.action}
           </Button>
@@ -84,6 +95,7 @@ export default function Player(props: Props) {
             color='error'
             variant='contained'
             onClick={() => handleClick(props.action, props.userId, 'challenge')}
+            disabled={disabled}
           >
             CHALLENGE {props.action}
           </Button>
@@ -91,6 +103,7 @@ export default function Player(props: Props) {
             color='success'
             variant='contained'
             onClick={() => handleClick(props.action, props.userId, 'pass')}
+            disabled={disabled}
           >
             PASS
           </Button>
@@ -116,6 +129,7 @@ export default function Player(props: Props) {
               )
             }
             startIcon={<Avatar src={blockIcon[props.action][0]} />}
+            disabled={disabled}
           >
             BLOCK {props.action}
           </Button>
@@ -127,6 +141,7 @@ export default function Player(props: Props) {
                 handleClick(props.action, props.userId, 'block', 'captain')
               }
               startIcon={<Avatar src='/captain-icon.svg' />}
+              disabled={disabled}
             >
               BLOCK {props.action}
             </Button>
@@ -135,6 +150,7 @@ export default function Player(props: Props) {
             color='success'
             variant='contained'
             onClick={() => handleClick(props.action, props.userId, 'pass')}
+            disabled={disabled}
           >
             PASS
           </Button>
@@ -150,6 +166,7 @@ export default function Player(props: Props) {
             color='error'
             variant='contained'
             onClick={() => handleClick(props.action, props.userId, 'doubt')}
+            disabled={disabled}
           >
             Doubt {props.gameState.activity.counterActorCard}
           </Button>
@@ -157,6 +174,7 @@ export default function Player(props: Props) {
             color='success'
             variant='contained'
             onClick={() => handleClick(props.action, props.userId, 'pass')}
+            disabled={disabled}
           >
             PASS
           </Button>
@@ -175,6 +193,7 @@ export default function Player(props: Props) {
             color='error'
             variant='contained'
             onClick={() => handleLoseInfluence('one')}
+            disabled={disabled}
           >
             Lose {currentUser.cardOne}
           </Button>
@@ -184,6 +203,7 @@ export default function Player(props: Props) {
             color='error'
             variant='contained'
             onClick={() => handleLoseInfluence('two')}
+            disabled={disabled}
           >
             Lose {currentUser.cardTwo}
           </Button>
@@ -201,13 +221,16 @@ export default function Player(props: Props) {
         bgcolor: props.isActiveUser && 'primary.main',
       }}
     >
-      <Typography sx={{ fontSize: 18 }} color={props.color} gutterBottom>
-        {props.userName}
-      </Typography>
+      <Box sx={{ display: 'flex' }}>
+        {props.icon && <Avatar src={props.icon} />}
+        <Typography sx={{ fontSize: 18 }} color={props.color} gutterBottom>
+          {props.userName}
+        </Typography>
 
-      <Typography sx={{ fontSize: 18 }} gutterBottom>
-        {props.coinCount}
-      </Typography>
+        <Typography sx={{ fontSize: 18 }} gutterBottom>
+          {props.coinCount}
+        </Typography>
+      </Box>
       <Box
         sx={{
           display: 'flex',

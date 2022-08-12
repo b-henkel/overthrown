@@ -9,9 +9,9 @@ type Props = {
 export default function GameOver(props: Props) {
   return (
     <>
-      <img src='#' alt='winner image' />
+      <img src={props.gameState.winner.icon} alt='winner image' />
       <h1>GAME OVER</h1>
-      <p>{props.gameState.winner} WON!</p>
+      <p>{props.gameState.winner.name} WON!</p>
     </>
   );
 }
