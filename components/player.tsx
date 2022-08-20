@@ -2,28 +2,19 @@ import React from 'react';
 import { Button, Card, CardMedia } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { GameObject } from '../game/types/game-types';
+import { GameObject, User } from '../game/types/game-types';
 import { Socket } from 'socket.io-client';
 import Avatar from '@mui/material/Avatar';
 import { useState, useEffect } from 'react';
+import { cardBack, toImage } from '../constants/cards';
 
 // TODO fix card spanning issue
-// Add coin count to component
-// Add statful card info
-// Add influence loss placeholder
 // Add animation card reveal and discard animation
 
 type Props = {
+  user: User;
   socket?: Socket;
   style?: object;
-  cardOne?: string;
-  cardTwo?: string;
-  cardOneActive?: boolean;
-  cardTwoActive?: boolean;
-  userName?: string;
-  userId?: string;
-  color?: string;
-  coinCount?: number;
   isActiveUser?: boolean;
   action?: string;
   phase?: string;
@@ -31,8 +22,7 @@ type Props = {
   gameState?: GameObject;
   loseInfluenceTarget?: string;
   isPrimaryPlayerTile: boolean;
-  icon?: string;
-  participant: boolean;
+  yourPlayerParticipant: boolean;
 };
 
 export default function Player(props: Props) {
@@ -64,9 +54,9 @@ export default function Player(props: Props) {
   const handleLoseInfluence = (card) => {
     const gameState = props.gameState;
     if (card === 'one') {
-      gameState.users[props.userId].cardOneActive = false;
+      gameState.users[props.user.id].cardOneActive = false;
     } else {
-      gameState.users[props.userId].cardTwoActive = false;
+      gameState.users[props.user.id].cardTwoActive = false;
     }
     props.socket.emit('loseInfluence', {
       gameId: props.gameState.id,
@@ -74,14 +64,18 @@ export default function Player(props: Props) {
     });
   };
   let buttons;
-  if (!props.isPrimaryPlayerTile && props.participant) {
+  if (
+    !props.isPrimaryPlayerTile &&
+    props.user.participant &&
+    props.yourPlayerParticipant
+  ) {
     if (props.phase === 'action') {
       if (['overThrow', 'assassinate', 'steal'].includes(props.action)) {
         buttons = (
           <Button
             color='error'
             variant='contained'
-            onClick={() => handleClick(props.action, props.userId, null)}
+            onClick={() => handleClick(props.action, props.user.id, null)}
             disabled={disabled}
           >
             {props.action}
@@ -94,7 +88,9 @@ export default function Player(props: Props) {
           <Button
             color='error'
             variant='contained'
-            onClick={() => handleClick(props.action, props.userId, 'challenge')}
+            onClick={() =>
+              handleClick(props.action, props.user.id, 'challenge')
+            }
             disabled={disabled}
           >
             CHALLENGE {props.action}
@@ -102,7 +98,7 @@ export default function Player(props: Props) {
           <Button
             color='success'
             variant='contained'
-            onClick={() => handleClick(props.action, props.userId, 'pass')}
+            onClick={() => handleClick(props.action, props.user.id, 'pass')}
             disabled={disabled}
           >
             PASS
@@ -123,7 +119,7 @@ export default function Player(props: Props) {
             onClick={() =>
               handleClick(
                 props.action,
-                props.userId,
+                props.user.id,
                 'block',
                 blockIcon[props.action][1]
               )
@@ -138,7 +134,7 @@ export default function Player(props: Props) {
               color='error'
               variant='contained'
               onClick={() =>
-                handleClick(props.action, props.userId, 'block', 'captain')
+                handleClick(props.action, props.user.id, 'block', 'captain')
               }
               startIcon={<Avatar src='/captain-icon.svg' />}
               disabled={disabled}
@@ -149,7 +145,7 @@ export default function Player(props: Props) {
           <Button
             color='success'
             variant='contained'
-            onClick={() => handleClick(props.action, props.userId, 'pass')}
+            onClick={() => handleClick(props.action, props.user.id, 'pass')}
             disabled={disabled}
           >
             PASS
@@ -158,14 +154,14 @@ export default function Player(props: Props) {
       );
     } else if (
       props.phase === 'challengeCounterAction' &&
-      props.gameState.activity.counterActor === props.userId
+      props.gameState.activity.counterActor === props.user.id
     ) {
       buttons = (
         <Box>
           <Button
             color='error'
             variant='contained'
-            onClick={() => handleClick(props.action, props.userId, 'doubt')}
+            onClick={() => handleClick(props.action, props.user.id, 'doubt')}
             disabled={disabled}
           >
             Doubt {props.gameState.activity.counterActorCard}
@@ -173,7 +169,7 @@ export default function Player(props: Props) {
           <Button
             color='success'
             variant='contained'
-            onClick={() => handleClick(props.action, props.userId, 'pass')}
+            onClick={() => handleClick(props.action, props.user.id, 'pass')}
             disabled={disabled}
           >
             PASS
@@ -183,9 +179,10 @@ export default function Player(props: Props) {
     }
   } else if (
     props.phase === 'loseInfluence' &&
-    props.loseInfluenceTarget === props.userId
+    props.loseInfluenceTarget === props.user.id &&
+    props.yourPlayerParticipant
   ) {
-    const currentUser = props.gameState.users[props.userId];
+    const currentUser = props.gameState.users[props.user.id];
     buttons = (
       <Box>
         {currentUser.cardOneActive && (
@@ -212,6 +209,25 @@ export default function Player(props: Props) {
     );
   }
 
+  let cardOneImage;
+  let cardTwoImage;
+
+  if (props.isPrimaryPlayerTile) {
+    cardOneImage = toImage(props.user.cardOne);
+    cardTwoImage = toImage(props.user.cardTwo);
+  } else {
+    if (props.user.cardOneActive) {
+      cardOneImage = cardBack;
+    } else {
+      cardOneImage = toImage(props.user.cardOne);
+    }
+    if (props.user.cardTwoActive) {
+      cardTwoImage = cardBack;
+    } else {
+      cardTwoImage = toImage(props.user.cardTwo);
+    }
+  }
+
   return (
     <Card
       sx={{
@@ -222,13 +238,13 @@ export default function Player(props: Props) {
       }}
     >
       <Box sx={{ display: 'flex' }}>
-        {props.icon && <Avatar src={props.icon} />}
-        <Typography sx={{ fontSize: 18 }} color={props.color} gutterBottom>
-          {props.userName}
+        {props.user.icon && <Avatar src={props.user.icon} />}
+        <Typography sx={{ fontSize: 18 }} color={props.user.color} gutterBottom>
+          {props.user.name}
         </Typography>
 
         <Typography sx={{ fontSize: 18 }} gutterBottom>
-          {props.coinCount}
+          {props.user.coins}
         </Typography>
       </Box>
       <Box
@@ -239,26 +255,26 @@ export default function Player(props: Props) {
           m: 1,
         }}
       >
-        {props.cardOne && (
+        {props.user.cardOne && (
           <Box
             component='img'
             sx={{
               maxWidth: '48%',
               maxHeight: '24vh',
-              opacity: props.cardOneActive ? 1 : 0.5,
+              opacity: props.user.cardOneActive ? 1 : 0.5,
             }}
-            src={props.cardOne}
+            src={cardOneImage}
           />
         )}
-        {props.cardTwo && (
+        {props.user.cardTwo && (
           <Box
             component='img'
             sx={{
               maxWidth: '48%',
               maxHeight: '24vh',
-              opacity: props.cardTwoActive ? 1 : 0.5,
+              opacity: props.user.cardTwoActive ? 1 : 0.5,
             }}
-            src={props.cardTwo}
+            src={cardTwoImage}
           />
         )}
       </Box>

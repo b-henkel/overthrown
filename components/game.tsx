@@ -12,6 +12,20 @@ import { useState } from 'react';
 import { User, GameObject } from '../game/types/game-types';
 import { Socket } from 'socket.io-client';
 
+const emptyUser: User = {
+  id: null,
+  name: null,
+  coins: null,
+  color: null,
+  cardOne: null,
+  cardTwo: null,
+  cardOneActive: null,
+  cardTwoActive: null,
+  number: null,
+  participant: null,
+  icon: null,
+};
+
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -93,26 +107,7 @@ export default function Game(props: Props) {
         <Grid item xs={1}>
           <Player
             socket={props.socket}
-            cardOne={
-              user
-                ? user.cardOneActive
-                  ? cardBack
-                  : toImage(user.cardOne)
-                : null
-            }
-            cardTwo={
-              user
-                ? user.cardTwoActive
-                  ? cardBack
-                  : toImage(user.cardTwo)
-                : null
-            }
-            cardOneActive={user ? user.cardOneActive : null}
-            cardTwoActive={user ? user.cardTwoActive : null}
-            userName={user ? user.name : null}
-            userId={user ? user.id : null}
-            color={user ? user.color : null}
-            coinCount={user ? user.coins : null}
+            user={user ? user : emptyUser}
             isActiveUser={
               user ? props.gameState.currentPlayer === user.id : null
             }
@@ -123,8 +118,7 @@ export default function Game(props: Props) {
             isPrimaryPlayerTile={false}
             gameId={props.gameState.id}
             gameState={props.gameState}
-            icon={user ? user.icon : null}
-            participant={currentUser.participant}
+            yourPlayerParticipant={currentUser.participant}
           />
         </Grid>
       );
@@ -141,23 +135,14 @@ export default function Game(props: Props) {
         </Grid>
         <Grid item xs={1}>
           <Player
-            userName={currentUser.name}
-            userId={props.userId}
+            user={currentUser}
             gameState={props.gameState}
-            color={currentUser.color}
-            cardOne={currentUser.cardOne && `/${currentUser.cardOne}.svg`}
-            cardTwo={currentUser.cardTwo && `/${currentUser.cardTwo}.svg`}
-            cardOneActive={currentUser.cardOneActive}
-            cardTwoActive={currentUser.cardTwoActive}
-            coinCount={currentUser.coins}
             isActiveUser={props.gameState.currentPlayer === props.userId}
-            // style={{ height: '47.5vh', width: '30vw' }}
             phase={props.gameState.activity.phase}
             loseInfluenceTarget={props.gameState.activity.loseInfluenceTarget}
             isPrimaryPlayerTile={true}
             socket={props.socket}
-            icon={currentUser.icon}
-            participant={currentUser.participant}
+            yourPlayerParticipant={currentUser.participant}
           />
         </Grid>
         <Grid item xs={1}>

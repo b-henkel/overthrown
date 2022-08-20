@@ -115,8 +115,12 @@ export const startGame = (socket, gameId) => {
 };
 
 export const removeUser = (socket) => {
+  //TODO rewrite all user numbers when someone leaves
   Object.entries(globalGameState).forEach(([gameId, gameObj]) => {
     if (Object.keys(gameObj.users).includes(socket.id)) {
+      if (gameObj.currentPlayer === socket.id) {
+        nextTurn(socket.id, gameObj);
+      }
       delete gameObj.users[socket.id];
       socket.to(gameId).emit('state-update', gameObj);
     }

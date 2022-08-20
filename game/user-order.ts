@@ -1,5 +1,9 @@
 import { Users } from './types/game-types';
 
+const cleanUpPlayerNumbers = (currentPlayerId, usersObj: Users) => {
+  // TODO
+};
+
 export const getFirstPlayer = (usersObj) => {
   const usersArr = Object.keys(usersObj);
   const randomIndex = Math.floor(Math.random() * usersArr.length);
