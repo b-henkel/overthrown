@@ -115,11 +115,16 @@ export const startGame = (socket, gameId) => {
 };
 
 export const removeUser = (socket) => {
-  //TODO rewrite all user numbers when someone leaves
   Object.entries(globalGameState).forEach(([gameId, gameObj]) => {
     if (Object.keys(gameObj.users).includes(socket.id)) {
-      if (gameObj.currentPlayer === socket.id) {
+      gameObj.users[socket.id].participant = false;
+      let participants = Object.values(gameObj.users).filter(
+        (user) => user.participant
+      );
+      if (gameObj.currentPlayer === socket.id || participants.length === 1) {
         nextTurn(socket.id, gameObj);
+      } else {
+        resetActivity(gameObj);
       }
       delete gameObj.users[socket.id];
       socket.to(gameId).emit('state-update', gameObj);
@@ -151,7 +156,6 @@ const checkLastInfluence = (user: User) => {
 };
 
 const nextTurn = (currentPlayer, gameObj: GameObject) => {
-  // TODO: Check if there is only one participant left in game.
   let participants = Object.values(gameObj.users).filter(
     (user) => user.participant
   );
@@ -160,7 +164,7 @@ const nextTurn = (currentPlayer, gameObj: GameObject) => {
     gameObj.started = false;
     gameObj.winner = participants[0];
   }
-
+  console.log(`participants: ${JSON.stringify(participants)}`);
   resetActivity(gameObj);
   gameObj.currentPlayer = getNextPlayer(currentPlayer, gameObj.users);
   gameObj.activity.phase = ACTION;

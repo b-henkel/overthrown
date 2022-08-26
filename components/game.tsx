@@ -75,17 +75,27 @@ export default function Game(props: Props) {
         encoding = [2, 3, 4, 1, 0, 5];
         break;
       default:
-      // code block
+        // code block
+        encoding = [0, 0, 0, 0, 0, 0];
     }
     const usersArr: User[] = Object.values(props.gameState.users);
-    const yourUserPos = props.gameState.users[props.userId].number - 1;
+
+    // const yourUserPos = props.gameState.users[props.userId].number - 1;
+
     usersArr.sort((userA, userB) => {
       return userA.number - userB.number;
     });
-    let finalUserArr = usersArr.slice(yourUserPos, usersArr.length);
-    if (yourUserPos != 0) {
-      finalUserArr = finalUserArr.concat(usersArr.slice(0, yourUserPos));
-    }
+
+    const yourUserIndex = usersArr.findIndex(
+      (user) => user.id === props.userId
+    );
+
+    usersArr.splice(yourUserIndex, 1);
+    const finalUserArr = usersArr;
+    // let finalUserArr = usersArr.slice(yourUserIndex, usersArr.length);
+    // if (yourUserIndex != 0) {
+    //   finalUserArr = finalUserArr.concat(finalUserArr.slice(0, yourUserIndex));
+    // }
     console.log('finalUserArr:', JSON.stringify(finalUserArr));
     const gridItems = encoding.map((isPlayer, index) => {
       if (index === 4) {
@@ -100,7 +110,7 @@ export default function Game(props: Props) {
           </Grid>
         );
       }
-      const user: User = isPlayer ? finalUserArr[isPlayer] : null;
+      const user: User = isPlayer ? finalUserArr[isPlayer - 1] : null;
       console.log('user:', user);
 
       return (
