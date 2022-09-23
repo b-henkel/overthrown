@@ -101,12 +101,7 @@ export default function Game(props: Props) {
       if (index === 4) {
         return (
           <Grid item xs={1}>
-            <Banker
-              currentPlayer={
-                props.gameState.users[props.gameState.currentPlayer].name
-              }
-              currentPhase={props.gameState.activity.phase}
-            />
+            <Banker gameObject={props.gameState} />
           </Grid>
         );
       }
