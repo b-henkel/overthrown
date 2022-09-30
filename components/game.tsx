@@ -101,7 +101,7 @@ export default function Game(props: Props) {
       if (index === 4) {
         return (
           <Grid item xs={1}>
-            <Banker gameObject={props.gameState} />
+            <Banker gameObject={props.gameState} user={currentUser} />
           </Grid>
         );
       }

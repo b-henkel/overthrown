@@ -2,21 +2,18 @@ import React from 'react';
 import { Card, CardMedia } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { GameObject } from '../game/types/game-types';
+import { GameObject, User } from '../game/types/game-types';
 import {
   ACTION,
   CHALLENGE_ACTION,
-  RESOLVE_CHALLENGE_ACTION,
   COUNTER_ACTION,
   CHALLENGE_COUNTER_ACTION,
-  RESOLVE_CHALLENGE_COUNTER_ACTION,
-  RESOLVE_COUNTER_ACTION,
-  RESOLVE_ACTION,
   LOSE_INFLUENCE,
   EXCHANGE,
 } from '../game/phase-action-order';
 
 type Props = {
+  user: User;
   gameObject: GameObject;
   style?: object;
 };
@@ -28,9 +25,11 @@ const actionCards = {
 };
 
 export default function Banker(props: Props) {
+  const currentUser = props.user;
   const users = props.gameObject.users;
   const activity = props.gameObject.activity;
   const currentPlayer = users[props.gameObject.currentPlayer].name;
+  const currentPlayerId = props.gameObject.currentPlayer;
 
   const phase = activity.phase;
   const action = activity.action;
@@ -59,14 +58,55 @@ export default function Banker(props: Props) {
   const passingUsers = activity.passingUsers;
   let dialogue;
   if (phase === ACTION) {
-    dialogue = `player ${currentPlayer} is making their move.`;
+    if (currentUser.id === currentPlayerId) {
+      dialogue = `It's your turn. Pick an available action.`;
+    } else {
+      dialogue = `Player ${currentPlayer} is making their move.`;
+    }
   }
   if (phase === CHALLENGE_ACTION) {
-    dialogue = `player ${currentPlayer} is ${action}ing ${target}. Do you want to challenge ${currentPlayer}?`;
+    if (currentUser.id === currentPlayerId) {
+      dialogue = `The other players are judging you...`;
+    } else if (activity.actionTarget === currentUser.id) {
+      dialogue = `Player ${currentPlayer} is performing the ${action} action on you. Do you want to challenge them?`;
+    } else {
+      if (target) {
+        dialogue = `Player ${currentPlayer} is performing the ${action} action on ${target}. Do you want to challenge ${currentPlayer}?`;
+      } else {
+        dialogue = `Player ${currentPlayer} is performing the ${action} action. Do you want to challenge them?`;
+      }
+    }
+  }
+  if (phase === COUNTER_ACTION) {
+    if (currentUser.id === currentPlayerId) {
+      dialogue = `The other players are judging you...`;
+    } else if (activity.actionTarget === currentUser.id) {
+      dialogue = `Player ${currentPlayer} is performing the ${action} action on you. Do you want to block them?`;
+    } else {
+      if (target) {
+        dialogue = `Player ${currentPlayer} is performing the ${action} action on ${target}. Do you want to block ${currentPlayer}?`;
+      } else {
+        dialogue = `Player ${currentPlayer} is performing the ${action} action. Do you want to block them.`;
+      }
+    }
+  }
+  if (phase === CHALLENGE_COUNTER_ACTION) {
+    if (activity.counterActor === currentUser.id) {
+      dialogue = `The other players are judging if you have the ${counterActorCard} card...`;
+    } else {
+      dialogue = `Do you think ${counterActor} has the ${counterActorCard} card?`;
+    }
+  }
+  if (phase === LOSE_INFLUENCE) {
+    if (activity.loseInfluenceTarget === currentUser.id) {
+      dialogue = `Select which influence to lose.`;
+    } else {
+      dialogue = `Player ${loseInfluenceTarget} is deciding what influence to lose.`;
+    }
   }
 
   return (
-    <Card sx={{ height: '32vh', whiteSpace: 'nowrap' }}>
+    <Card sx={{ height: '32vh' }}>
       <div
         style={{
           position: 'relative',
@@ -99,34 +139,42 @@ export default function Banker(props: Props) {
             style={{
               position: 'absolute',
               color: 'black',
-              top: 8,
+              top: '50%',
               left: '50%',
-              transform: 'translateX(-50%)',
+              transform: 'translate(-50%,-50%)',
             }}
           >
-            <Typography sx={{ fontSize: 20, bgcolor: 'white' }} gutterBottom>
+            <Typography
+              sx={{
+                fontSize: 32,
+                color: 'white',
+                bgcolor: 'rgba(0, 0, 0, 0.5)',
+                padding: 1,
+              }}
+              gutterBottom
+            >
               {dialogue}
-              <br></br>
+              {/* <br />
               Current Player:
               {currentPlayer}
-              <br></br>
+              <br />
               Phase: {phase}
-              <br></br>
+              <br />
               Action:{action}
-              <br></br>
+              <br />
               Target:{target}
-              <br></br>
+              <br />
               Challenger: {challenger}
-              <br></br>
+              <br />
               CounterActor: {counterActor}
-              <br></br>
+              <br />
               Counter Actor Card: {counterActorCard}
-              <br></br>
+              <br />
               Counter Action Challenger: {counterActionChallenger}
-              <br></br>
+              <br />
               Lose Influence Target: {loseInfluenceTarget}
-              <br></br>
-              Passing Users: {passingUsers}
+              <br />
+              Passing Users: {passingUsers} */}
             </Typography>
           </div>
         </Box>
