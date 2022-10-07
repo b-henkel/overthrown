@@ -11,6 +11,7 @@ import Banker from './banker';
 import { useState } from 'react';
 import { User, GameObject } from '../game/types/game-types';
 import { Socket } from 'socket.io-client';
+import Exchange from './exchange';
 
 const emptyUser: User = {
   id: null,
@@ -132,6 +133,7 @@ export default function Game(props: Props) {
   };
   return (
     <Box sx={{ flexGrow: 1 }}>
+      <Exchange user={currentUser} gameObject={props.gameState} />
       <Grid container spacing={2} columns={3} justifyContent={'center'}>
         {setUpOtherPlayers()}
         <Grid item xs={1}>
