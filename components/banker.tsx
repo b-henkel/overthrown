@@ -104,6 +104,9 @@ export default function Banker(props: Props) {
       dialogue = `Player ${loseInfluenceTarget} is deciding what influence to lose.`;
     }
   }
+  if (phase === EXCHANGE) {
+    dialogue = `Player ${currentPlayer} is exchanging cards!`;
+  }
 
   return (
     <Card sx={{ height: '32vh' }}>

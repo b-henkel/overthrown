@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import cache from 'memory-cache';
-import { deal, swap, translateActionToCard } from './deck';
+import { deal, shuffle, swap, translateActionToCard } from './deck';
 import { getFirstPlayer, getNextPlayer } from './user-order';
 import { GlobalGameState, GameObject, User, Action } from './types/game-types';
 import {
@@ -16,6 +16,7 @@ import {
   RESOLVE_ACTION,
   LOSE_INFLUENCE,
   NEXT_TURN,
+  EXCHANGE,
 } from './phase-action-order';
 
 export function phaseToFunction(func) {
@@ -247,7 +248,11 @@ export function resolveAction(socket, gameId, action: Action) {
       targetUser.coins = 0;
     }
   }
-
+  if (action.type === 'exchange') {
+    gameObj.activity.phase = EXCHANGE;
+    pushCacheState(socket, gameId, gameObj);
+    return;
+  }
   nextTurn(gameObj.currentPlayer, gameObj);
   pushCacheState(socket, gameId, gameObj);
   console.log(' ------- ');
@@ -455,6 +460,18 @@ export function handleChallengeCounterAction(socket, gameId, action: Action) {
 }
 export function resolveChallengeCounterAction(socket, gameId, action: Action) {
   console.log('*** resolveChallengeCounterAction');
+}
+
+export function resolveExchange(socket, gameId, user: User, deck: string[]) {
+  const gameObj = loadGlobalGameState()[gameId];
+  gameObj.users[socket.id] = user;
+  // update the user object with user selection
+  // suffle deck
+  shuffle(deck);
+  gameObj.deck = deck;
+  // re-emit
+  nextTurn(gameObj.currentPlayer, gameObj);
+  pushCacheState(socket, gameId, gameObj);
 }
 
 export const pushState = (socket, gameId) => {

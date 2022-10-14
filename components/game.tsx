@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { User, GameObject } from '../game/types/game-types';
 import { Socket } from 'socket.io-client';
 import Exchange from './exchange';
+import { EXCHANGE } from '../game/phase-action-order';
 
 const emptyUser: User = {
   id: null,
@@ -133,7 +134,14 @@ export default function Game(props: Props) {
   };
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Exchange user={currentUser} gameObject={props.gameState} />
+      {props.gameState.activity.phase === EXCHANGE &&
+        props.userId === props.gameState.currentPlayer && (
+          <Exchange
+            user={currentUser}
+            gameObject={props.gameState}
+            socket={props.socket}
+          />
+        )}
       <Grid container spacing={2} columns={3} justifyContent={'center'}>
         {setUpOtherPlayers()}
         <Grid item xs={1}>

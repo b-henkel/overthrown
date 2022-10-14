@@ -16,7 +16,7 @@ const cards = [
   'ambassador',
 ];
 
-function shuffle(array) {
+export function shuffle(array) {
   let currentIndex = array.length,
     randomIndex;
 

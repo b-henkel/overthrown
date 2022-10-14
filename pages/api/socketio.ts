@@ -9,6 +9,7 @@ import {
   handleCounterAction,
   handleChallengeCounterAction,
   phaseToFunction,
+  resolveExchange,
   pushCacheState,
 } from '../../game/game-state';
 
@@ -19,6 +20,7 @@ import {
   CHALLENGE_ACTION,
   COUNTER_ACTION,
   CHALLENGE_COUNTER_ACTION,
+  EXCHANGE,
   LOSE_INFLUENCE,
 } from '../../game/phase-action-order';
 import { GameObject } from '../../game/types/game-types';
@@ -72,6 +74,11 @@ const ioHandler = (req, res) => {
       socket.on(CHALLENGE_COUNTER_ACTION, (data) => {
         handleChallengeCounterAction(socket, data.gameId, data.action);
       });
+
+      socket.on(EXCHANGE, (data) => {
+        resolveExchange(socket, data.gameId, data.user, data.deck);
+      });
+
       socket.on(
         LOSE_INFLUENCE,
         (data: { gameId: string; gameObj: GameObject }) => {
