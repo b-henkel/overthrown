@@ -11,7 +11,7 @@ export const getFirstPlayer = (usersObj) => {
 };
 
 export const getNextPlayer = (currentPlayerId, usersObj: Users) => {
-  const usersArr = Object.values(usersObj);
+  const usersArr = Object.values(usersObj).filter((user) => user.participant);
 
   usersArr.sort((a, b) => {
     return a.number - b.number;

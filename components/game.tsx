@@ -163,6 +163,7 @@ export default function Game(props: Props) {
         <Grid item xs={1}>
           {/* action panel. lie indicator*/}
           <Actions
+            userCount={Object.values(props.gameState.users).length}
             socket={props.socket}
             isActiveUser={props.gameState.currentPlayer === props.userId}
             cardOne={currentUser.cardOne}

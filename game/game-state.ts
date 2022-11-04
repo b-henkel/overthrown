@@ -194,7 +194,9 @@ export function handleAction(socket, gameId, action: Action) {
     const targetUser = gameObj.users[action.target];
     const lastInfluence = checkLastInfluence(targetUser);
     if (lastInfluence) {
-      nextTurn(gameObj.currentPlayer, gameObj);
+      cacheState(gameId, gameObj);
+      resolveAction(socket, gameId, action);
+      // nextTurn(gameObj.currentPlayer, gameObj);
     } else {
       gameObj.activity.phase = LOSE_INFLUENCE;
       gameObj.activity.originalPhase = ACTION;
@@ -486,4 +488,9 @@ export const pushCacheState = (socket, gameId, gameObj) => {
   socket.emit('state-update', gameObj);
   socket.to(gameId).emit('state-update', gameObj);
   // console.log('game state: ', JSON.stringify(gameObj));
+};
+
+export const cacheState = (gameId, gameObj) => {
+  globalGameState[gameId] = gameObj;
+  cache.put('globalGameState', globalGameState);
 };

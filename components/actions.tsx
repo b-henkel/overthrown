@@ -10,6 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useState, useEffect } from 'react';
 
 type Props = {
+  userCount: number;
   socket: Socket;
   isActiveUser: boolean;
   cardOne: string;
@@ -24,7 +25,7 @@ export default function Actions(props: Props) {
 
   useEffect(() => {
     setDisabled(false);
-  }, [props.isActiveUser]);
+  }, [props.isActiveUser, props.userCount]);
 
   let basicDisabled = false;
   if (!props.isActiveUser || props.coinCount >= 10 || disabled) {
