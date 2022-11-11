@@ -25,6 +25,8 @@ type Props = {
   yourPlayerParticipant: boolean;
 };
 
+const gap = 2;
+
 export default function Player(props: Props) {
   const [disabled, setDisabled] = useState(false);
 
@@ -72,19 +74,21 @@ export default function Player(props: Props) {
     if (props.phase === 'action') {
       if (['overThrow', 'assassinate', 'steal'].includes(props.action)) {
         buttons = (
-          <Button
-            color='error'
-            variant='contained'
-            onClick={() => handleClick(props.action, props.user.id, null)}
-            disabled={disabled}
-          >
-            {props.action}
-          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button
+              color='error'
+              variant='contained'
+              onClick={() => handleClick(props.action, props.user.id, null)}
+              disabled={disabled}
+            >
+              {props.action}
+            </Button>
+          </Box>
         );
       }
     } else if (props.phase === 'challengeAction' && props.isActiveUser) {
       buttons = (
-        <Box>
+        <Box sx={{ gap: gap, display: 'flex', justifyContent: 'center' }}>
           <Button
             color='error'
             variant='contained'
@@ -112,7 +116,7 @@ export default function Player(props: Props) {
         assassinate: ['/contessa-icon.svg', 'contessa'],
       };
       buttons = (
-        <Box>
+        <Box sx={{ gap: gap, display: 'flex', justifyContent: 'center' }}>
           <Button
             color='error'
             variant='contained'
@@ -157,7 +161,7 @@ export default function Player(props: Props) {
       props.gameState.activity.counterActor === props.user.id
     ) {
       buttons = (
-        <Box>
+        <Box sx={{ gap: gap, display: 'flex', justifyContent: 'center' }}>
           <Button
             color='error'
             variant='contained'
@@ -184,7 +188,7 @@ export default function Player(props: Props) {
   ) {
     const currentUser = props.gameState.users[props.user.id];
     buttons = (
-      <Box>
+      <Box sx={{ gap: gap, display: 'flex', justifyContent: 'center' }}>
         {currentUser.cardOneActive && (
           <Button
             color='error'
@@ -237,30 +241,35 @@ export default function Player(props: Props) {
         bgcolor: props.isActiveUser && 'primary.main',
       }}
     >
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
         {props.user.icon && <Avatar src={props.user.icon} />}
-        <Typography sx={{ fontSize: 18 }} color={props.user.color} gutterBottom>
+        <Typography sx={{ fontSize: 24 }} color={props.user.color} gutterBottom>
           {props.user.name}
         </Typography>
-
-        <Typography sx={{ fontSize: 18 }} gutterBottom>
-          {props.user.coins}
-        </Typography>
+        <Box
+          sx={{ borderRadius: '25px', backgroundColor: 'gold', boxShadow: 5 }}
+        >
+          <Typography sx={{ fontSize: 24 }} gutterBottom>
+            {props.user.coins}
+          </Typography>
+        </Box>
       </Box>
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'center',
+          gap: gap,
           p: 1,
-          m: 1,
         }}
       >
         {props.user.cardOne && (
           <Box
             component='img'
             sx={{
+              borderRadius: '25px',
+              boxShadow: 20,
               maxWidth: '48%',
-              maxHeight: '24vh',
+              maxHeight: '25vh',
               opacity: props.user.cardOneActive ? 1 : 0.5,
             }}
             src={cardOneImage}
@@ -270,15 +279,26 @@ export default function Player(props: Props) {
           <Box
             component='img'
             sx={{
+              borderRadius: '25px',
+              boxShadow: 20,
               maxWidth: '48%',
-              maxHeight: '24vh',
+              maxHeight: '25vh',
               opacity: props.user.cardTwoActive ? 1 : 0.5,
             }}
             src={cardTwoImage}
           />
         )}
       </Box>
-      {buttons}
+      <Box
+        sx={{
+          zIndex: 2000,
+          position: 'relative',
+          top: '-18%',
+          left: '0%',
+        }}
+      >
+        {buttons}
+      </Box>
     </Card>
   );
 }

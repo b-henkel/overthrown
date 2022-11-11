@@ -142,7 +142,7 @@ export default function Game(props: Props) {
             socket={props.socket}
           />
         )}
-      <Grid container spacing={2} columns={3} justifyContent={'center'}>
+      <Grid container spacing={1} columns={3} justifyContent={'center'} p={1}>
         {setUpOtherPlayers()}
         <Grid item xs={1}>
           {/* chat/ log */}
