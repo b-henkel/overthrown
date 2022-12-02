@@ -133,7 +133,7 @@ export default function Game(props: Props) {
     return gridItems;
   };
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, backgroundImage: "url('/board.png')" }}>
       {props.gameState.activity.phase === EXCHANGE &&
         props.userId === props.gameState.currentPlayer && (
           <Exchange

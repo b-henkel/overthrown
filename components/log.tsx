@@ -13,7 +13,7 @@ export default function Log(props: Props) {
   const usersArr = Object.keys(props.gameState.users);
   console.log('userArr', usersArr);
   return (
-    <Card sx={{ height: '32vh' }}>
+    <Card sx={{ height: '32vh', backgroundColor: 'rgba(255,255,255,0.7)' }}>
       <CardContent>
         <Typography sx={{ fontSize: 24 }} color='text.primary'>
           Action Log

@@ -22,6 +22,9 @@ const actionCards = {
   assassinate: '/assassin.svg',
   steal: '/captain.svg',
   exchange: '/ambassador.svg',
+  income: '/banker.svg',
+  foreignAid: '/banker.svg',
+  overthrow: '/assassin-icon.svg',
 };
 
 export default function Banker(props: Props) {
@@ -109,7 +112,7 @@ export default function Banker(props: Props) {
   }
 
   return (
-    <Card sx={{ height: '32vh' }}>
+    <Card sx={{ height: '32vh', backgroundColor: 'rgba(255,255,255,0.8)' }}>
       <div
         style={{
           position: 'relative',
@@ -135,7 +138,7 @@ export default function Banker(props: Props) {
             image={
               props.gameObject.activity.phase === 'action'
                 ? '/banker.svg'
-                : actionCards[props.gameObject.activity.action]
+                : actionCards[props.gameObject.activity.action] || '/banker.svg'
             }
           />
           <div

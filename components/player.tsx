@@ -232,13 +232,17 @@ export default function Player(props: Props) {
     }
   }
 
+  const activeColor = props.isActiveUser ? '251, 200, 140' : '255, 255, 255';
+  const tileOpacity = props.user.id === null ? '0.4' : '0.7';
+
   return (
     <Card
       sx={{
         height: '32vh',
-
+        // opacity: props.user.id === null ? 0.4 : 0.7,
+        backgroundColor: `rgba(${activeColor}, ${tileOpacity})`,
         whiteSpace: 'nowrap',
-        bgcolor: props.isActiveUser && 'primary.main',
+        // bgcolor: props.isActiveUser && 'primary.main',
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>

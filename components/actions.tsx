@@ -47,7 +47,7 @@ export default function Actions(props: Props) {
     ? { width: '1.5vw', height: '1.5vw' }
     : { width: '4vw', height: '4vw' };
   return (
-    <Card sx={{ height: '32vh' }}>
+    <Card sx={{ height: '32vh', backgroundColor: 'rgba(255,255,255,0.7)' }}>
       <CardContent>
         <Box
           sx={{
@@ -65,7 +65,7 @@ export default function Actions(props: Props) {
           <ButtonGroup
             orientation={`${orientation ? `horizontal` : `vertical`}`}
             size='small'
-            sx={{ maxWidth: '95%' }}
+            sx={{ maxWidth: '95%', backgroundColor: 'rgba(255,255,255,1)' }}
             variant='text'
             aria-label='text button group'
           >
@@ -100,7 +100,11 @@ export default function Actions(props: Props) {
           <Typography sx={{ fontSize: 18 }} color='text.primary'>
             Character Actions
           </Typography>
-          <ButtonGroup variant='text' aria-label='text button group'>
+          <ButtonGroup
+            sx={{ backgroundColor: 'rgba(255,255,255,1)' }}
+            variant='text'
+            aria-label='text button group'
+          >
             <Button
               variant='outlined'
               startIcon={<Avatar sx={avatarStyle} src='/duke-icon.svg' />}
@@ -121,7 +125,11 @@ export default function Actions(props: Props) {
               {!iconsOnly && 'Assassinate'}
             </Button>
           </ButtonGroup>
-          <ButtonGroup variant='text' aria-label='text button group'>
+          <ButtonGroup
+            sx={{ backgroundColor: 'rgba(255,255,255,1)' }}
+            variant='text'
+            aria-label='text button group'
+          >
             <Button
               variant='outlined'
               startIcon={<Avatar sx={avatarStyle} src='/captain-icon.svg' />}

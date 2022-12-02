@@ -90,6 +90,11 @@ export default function Lobby(props: Props) {
           placeholder='Input a User Name'
           onChange={(e) => setUsername(e.target.value)}
           value={username}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              addUser();
+            }
+          }}
         />
         <Button variant='outlined' onClick={addUser}>
           submit
