@@ -145,17 +145,21 @@ export default function Banker(props: Props) {
             style={{
               position: 'absolute',
               color: 'black',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%,-50%)',
+              top: '65%',
+              // left: '50%',
+              // transform: 'translate(-50%,-50%)',
+              width: '100%',
             }}
           >
             <Typography
               sx={{
                 fontSize: 32,
                 color: 'white',
-                bgcolor: 'rgba(0, 0, 0, 0.5)',
+                bgcolor: 'rgba(0, 0, 0, 0.75)',
                 padding: 1,
+                textAlign: 'center',
+                fontFamily: 'serif',
+                fontStyle: 'italic',
               }}
               gutterBottom
             >

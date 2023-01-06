@@ -233,7 +233,7 @@ export default function Player(props: Props) {
   }
 
   const activeColor = props.isActiveUser ? '251, 200, 140' : '255, 255, 255';
-  const tileOpacity = props.user.id === null ? '0.4' : '0.7';
+  const tileOpacity = props.user.id === null ? '0.2' : '0.7';
 
   return (
     <Card

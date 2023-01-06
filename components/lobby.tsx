@@ -53,26 +53,49 @@ export default function Lobby(props: Props) {
   return (
     <Box
       sx={{
-        display: 'block',
-        marginTop: 10,
-        textAlign: 'center',
+        width: '100%',
+        height: '100vh',
+        backgroundImage: "url('/board.png')",
+        position: 'fixed',
+        display: 'flex',
+        justifyContent: 'center',
       }}
     >
       <Box
-        component='img'
-        sx={{ maxWidth: '90vw' }}
-        alt='characters'
-        src='../splash.svg'
-      />
-      <Typography sx={{ fontSize: '5vh' }}>Welcome to the Lobby!</Typography>
-      <Typography sx={{ marginTop: 3 }} variant='h4'>
-        Your Game ID:
-      </Typography>
-      <Typography variant='h6'>{router.query.id}</Typography>
-      <Button variant='outlined' onClick={copyToClipboard}>
-        Copy Link to Clipboard
-      </Button>
-      {/* <Paper
+        sx={{
+          backgroundColor: '#fff',
+          width: '900px',
+          height: '100vh',
+          display: 'block',
+          paddingTop: 10,
+          textAlign: 'center',
+        }}
+      >
+        <Box
+          component='img'
+          sx={{ maxWidth: '90vw' }}
+          alt='characters'
+          src='../splash.svg'
+        />
+        <Typography
+          sx={{
+            backgroundColor: '#000',
+            color: '#fff',
+            fontFamily: 'serif',
+            fontSize: '5vh',
+            fontStyle: 'italic',
+          }}
+        >
+          WELCOME TO THE LOBBY!
+        </Typography>
+        <Typography sx={{ marginTop: 3 }} variant='h4'>
+          Your Game ID:
+        </Typography>
+        <Typography variant='h6'>{router.query.id}</Typography>
+        <Button variant='outlined' onClick={copyToClipboard}>
+          Copy Link to Clipboard
+        </Button>
+        {/* <Paper
         component='form'
         sx={{
           alignItems: 'center',
@@ -82,56 +105,57 @@ export default function Lobby(props: Props) {
           width: 300,
         }}
       > */}
-      <Box sx={{ marginTop: 5 }}>
-        <InputBase
-          sx={{ ml: 1, flex: 1 }}
-          required
-          id='text_box'
-          placeholder='Input a User Name'
-          onChange={(e) => setUsername(e.target.value)}
-          value={username}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              addUser();
-            }
+        <Box sx={{ marginTop: 5 }}>
+          <InputBase
+            sx={{ ml: 1, flex: 1 }}
+            required
+            id='text_box'
+            placeholder='Input a User Name'
+            onChange={(e) => setUsername(e.target.value)}
+            value={username}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                addUser();
+              }
+            }}
+          />
+          <Button variant='outlined' onClick={addUser}>
+            submit
+          </Button>
+        </Box>
+
+        <Typography sx={{ marginTop: 3 }} variant='h5'>
+          Players:{' '}
+        </Typography>
+        <List
+          sx={{
+            fontSize: 24,
+            margin: 'auto',
+            maxWidth: 600,
           }}
-        />
-        <Button variant='outlined' onClick={addUser}>
-          submit
+        >
+          {props.gameState &&
+            Object.entries(props.gameState.users).map(([userID, userObj]) => {
+              return (
+                <ListItem>
+                  &rarr;
+                  <Avatar src={userObj.icon} />
+                  {userObj.name}
+                </ListItem>
+              );
+            })}
+        </List>
+        <Button
+          variant='contained'
+          color='error'
+          onClick={startGame}
+          disabled={
+            props.gameState && Object.values(props.gameState.users).length < 2
+          }
+        >
+          Start Game &rarr;
         </Button>
       </Box>
-
-      <Typography sx={{ marginTop: 3 }} variant='h5'>
-        Players:{' '}
-      </Typography>
-      <List
-        sx={{
-          fontSize: 24,
-          margin: 'auto',
-          maxWidth: 600,
-        }}
-      >
-        {props.gameState &&
-          Object.entries(props.gameState.users).map(([userID, userObj]) => {
-            return (
-              <ListItem>
-                &rarr;
-                <Avatar src={userObj.icon} />
-                {userObj.name}
-              </ListItem>
-            );
-          })}
-      </List>
-      <Button
-        variant='contained'
-        color='error'
-        onClick={startGame}
-        disabled={
-          props.gameState && Object.values(props.gameState.users).length < 2
-        }
-      >
-        Start Game &rarr;
-      </Button>
     </Box>
   );
 }
