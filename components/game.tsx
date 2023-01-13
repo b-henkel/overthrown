@@ -13,6 +13,8 @@ import { User, GameObject } from '../game/types/game-types';
 import { Socket } from 'socket.io-client';
 import Exchange from './exchange';
 import { EXCHANGE } from '../game/phase-action-order';
+import Rules from './rules';
+import { Button } from '@mui/material';
 
 const emptyUser: User = {
   id: null,
@@ -43,6 +45,8 @@ type Props = {
 
 export default function Game(props: Props) {
   const [targetedAction, setTargetedAction] = useState(null);
+  const [rulesModal, setRulesModal] = useState(false);
+
   React.useEffect(() => {
     setTargetedAction(null);
   }, [props.gameState]);
@@ -134,6 +138,9 @@ export default function Game(props: Props) {
   };
   return (
     <Box sx={{ flexGrow: 1, backgroundImage: "url('/board.png')" }}>
+      {rulesModal && (
+        <Rules rulesModal={rulesModal} setRulesModal={setRulesModal} />
+      )}
       {props.gameState.activity.phase === EXCHANGE &&
         props.userId === props.gameState.currentPlayer && (
           <Exchange
@@ -174,6 +181,15 @@ export default function Game(props: Props) {
           />
         </Grid>
       </Grid>
+      <Button
+        variant='contained'
+        sx={{ position: 'absolute', bottom: 25, left: 10 }}
+        onClick={() => {
+          setRulesModal(true);
+        }}
+      >
+        Rules
+      </Button>
     </Box>
   );
 }
