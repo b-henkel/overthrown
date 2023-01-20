@@ -16,6 +16,8 @@ type Props = {
   user: User;
   gameObject: GameObject;
   style?: object;
+  seconds: number;
+  isTimerActive: boolean;
 };
 const actionCards = {
   tax: '/duke.svg',
@@ -163,6 +165,7 @@ export default function Banker(props: Props) {
               }}
               gutterBottom
             >
+              {props.isTimerActive && `${props.seconds} seconds to choose.`}
               {dialogue}
               {/* <br />
               Current Player:
