@@ -23,6 +23,8 @@ type Props = {
   loseInfluenceTarget?: string;
   isPrimaryPlayerTile: boolean;
   yourPlayerParticipant: boolean;
+  startTimer?: Function;
+  cancelTimer?: Function;
 };
 
 const gap = 2;
@@ -87,14 +89,17 @@ export default function Player(props: Props) {
         );
       }
     } else if (props.phase === 'challengeAction' && props.isActiveUser) {
+      const passFunc = () => handleClick(props.action, props.user.id, 'pass');
+      props.startTimer(passFunc);
       buttons = (
         <Box sx={{ gap: gap, display: 'flex', justifyContent: 'center' }}>
           <Button
             color='error'
             variant='contained'
-            onClick={() =>
-              handleClick(props.action, props.user.id, 'challenge')
-            }
+            onClick={() => {
+              props.cancelTimer();
+              handleClick(props.action, props.user.id, 'challenge');
+            }}
             disabled={disabled}
           >
             CHALLENGE {props.action}
@@ -102,7 +107,10 @@ export default function Player(props: Props) {
           <Button
             color='success'
             variant='contained'
-            onClick={() => handleClick(props.action, props.user.id, 'pass')}
+            onClick={() => {
+              props.cancelTimer();
+              handleClick(props.action, props.user.id, 'pass');
+            }}
             disabled={disabled}
           >
             PASS

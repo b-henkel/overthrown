@@ -47,6 +47,65 @@ export default function Game(props: Props) {
   const [targetedAction, setTargetedAction] = useState(null);
   const [rulesModal, setRulesModal] = useState(false);
 
+  const [seconds, setSeconds] = useState(0);
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const [deadlineFunc, setDeadlineFunc] = useState<Function>();
+  const [timerInterval, setTimerInterval] = useState(null);
+
+  function startTimer(func) {
+    setIsTimerActive(true);
+    // setDeadlineFunc(func);
+  }
+
+  function cancelTimer() {
+    setIsTimerActive(false);
+    setSeconds(10);
+    setDeadlineFunc(null);
+    console.log('trying to clear interval: ', timerInterval);
+    clearInterval(timerInterval);
+  }
+
+  React.useEffect(() => {
+    if (isTimerActive) {
+      const interval = setInterval(() => {
+        setSeconds((seconds) => seconds + 1);
+      }, 1000);
+      setTimerInterval(interval);
+    }
+  }, [seconds]);
+
+  // React.useEffect(() => {
+  //   let interval = null;
+  //   if (isTimerActive) {
+  //     interval = setInterval(() => {
+  //       setSeconds((seconds) => seconds + 1);
+  //     }, 1000);
+  //   } else if (!isTimerActive && seconds !== 0) {
+  //     clearInterval(interval);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [isTimerActive]);
+
+  // React.useEffect(() => {
+  //   let interval = null;
+  //   if (isTimerActive) {
+  //     interval = setInterval(() => {
+  //       setSeconds((seconds) => seconds - 1);
+  //     }, 1000);
+  //     // if (interval === 0) {
+  //     //   if (deadlineFunc) {
+  //     //     deadlineFunc();
+  //     //   }
+  //     //   setSeconds(10);
+  //     //   setIsTimerActive(false);
+  //     //   setDeadlineFunc(null);
+  //     // }
+  //     // } else if (!isTimerActive && seconds !== 0) {
+  //     //   clearInterval(interval);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [isTimerActive, seconds]);
+
   React.useEffect(() => {
     setTargetedAction(null);
   }, [props.gameState]);
@@ -107,7 +166,12 @@ export default function Game(props: Props) {
       if (index === 4) {
         return (
           <Grid item xs={1}>
-            <Banker gameObject={props.gameState} user={currentUser} />
+            <Banker
+              gameObject={props.gameState}
+              user={currentUser}
+              isTimerActive={isTimerActive}
+              seconds={seconds}
+            />
           </Grid>
         );
       }
@@ -130,6 +194,8 @@ export default function Game(props: Props) {
             gameId={props.gameState.id}
             gameState={props.gameState}
             yourPlayerParticipant={currentUser.participant}
+            startTimer={startTimer}
+            cancelTimer={cancelTimer}
           />
         </Grid>
       );
