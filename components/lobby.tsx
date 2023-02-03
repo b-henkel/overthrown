@@ -16,6 +16,7 @@ import { Socket } from 'socket.io-client';
 import { GameObject } from '../game/types/game-types';
 import copy from 'copy-to-clipboard';
 import { textAlign } from '@mui/system';
+import Rules from './rules';
 
 type Props = {
   socket: Socket;
@@ -27,6 +28,7 @@ export default function Lobby(props: Props) {
   const router = useRouter();
   const { id: gameId } = router.query;
   const [username, setUsername] = useState('');
+  const [rulesModal, setRulesModal] = useState(false);
 
   const addUser = () => {
     // grab the text box's information
@@ -61,6 +63,9 @@ export default function Lobby(props: Props) {
         justifyContent: 'center',
       }}
     >
+      {rulesModal && (
+        <Rules rulesModal={rulesModal} setRulesModal={setRulesModal} />
+      )}
       <Box
         sx={{
           backgroundColor: '#fff',
@@ -156,6 +161,15 @@ export default function Lobby(props: Props) {
           Start Game &rarr;
         </Button>
       </Box>
+      <Button
+        variant='contained'
+        sx={{ position: 'absolute', bottom: 25, left: 10 }}
+        onClick={() => {
+          setRulesModal(true);
+        }}
+      >
+        Rules
+      </Button>
     </Box>
   );
 }
