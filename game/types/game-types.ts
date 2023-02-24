@@ -13,7 +13,7 @@ export type User = {
   cardTwoActive?: boolean;
   number?: number;
   participant?: boolean;
-  icon?: string;
+  icon?: number;
 };
 
 export type Users = {

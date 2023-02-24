@@ -246,7 +246,9 @@ export default function Player(props: Props) {
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
-        {props.user.icon && <Avatar src={props.user.icon} />}
+        {props.user.icon && (
+          <Avatar>{String.fromCodePoint(props.user.icon)}</Avatar>
+        )}
         <Typography sx={{ fontSize: 24 }} color={props.user.color} gutterBottom>
           {props.user.name}
         </Typography>

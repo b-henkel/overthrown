@@ -33,9 +33,14 @@ export default function Lobby(props: Props) {
   const addUser = () => {
     // grab the text box's information
     // and then fire an http request
+    const sanitizedUser = username.trim();
+    setUsername(sanitizedUser);
+    if (!sanitizedUser) {
+      return;
+    }
     if (props.socket) {
       console.log('Trying to emit?');
-      props.socket.emit('add-user', { username, gameId });
+      props.socket.emit('add-user', { username: sanitizedUser, gameId });
     } else {
       console.log('no socket available');
     }
@@ -94,7 +99,7 @@ export default function Lobby(props: Props) {
           WELCOME TO THE LOBBY!
         </Typography>
         <Typography sx={{ marginTop: 3 }} variant='h4'>
-          Your Game ID:
+          Your Game ID :
         </Typography>
         <Typography variant='h6'>{router.query.id}</Typography>
         <Button variant='outlined' onClick={copyToClipboard}>
@@ -113,7 +118,7 @@ export default function Lobby(props: Props) {
         <Box sx={{ marginTop: 5 }}>
           <InputBase
             sx={{ ml: 1, flex: 1 }}
-            required
+            required={true}
             id='text_box'
             placeholder='Input a User Name'
             onChange={(e) => setUsername(e.target.value)}
@@ -144,7 +149,7 @@ export default function Lobby(props: Props) {
               return (
                 <ListItem>
                   &rarr;
-                  <Avatar src={userObj.icon} />
+                  <Avatar>{String.fromCodePoint(userObj.icon)}</Avatar>
                   {userObj.name}
                 </ListItem>
               );

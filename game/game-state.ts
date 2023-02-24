@@ -18,6 +18,8 @@ import {
   NEXT_TURN,
   EXCHANGE,
 } from './phase-action-order';
+import { icons } from '../constants/user-icons';
+import _ from 'lodash';
 
 export function phaseToFunction(func) {
   // console.log('phase to func received', func);
@@ -87,9 +89,7 @@ export const addUser = (socket, gameId, user: User) => {
       cardOne: null,
       cardTwo: null,
       number: Object.keys(gameObj.users).length + 1,
-      icon: `https://thispersondoesnotexist.xyz/cats/${Math.floor(
-        Math.random() * 4999
-      )}.jpg`,
+      icon: _.sample(icons),
     };
   }
   console.log(JSON.stringify(gameObj));
