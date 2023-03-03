@@ -84,7 +84,6 @@ export const addUser = (socket, gameId, user: User) => {
     gameObj.users[user.id] = {
       id: user.id,
       name: user.name,
-      coins: 7, // TODO reset to 2, this is just for DEV purposes
       color: '#FF0000',
       cardOne: null,
       cardTwo: null,
@@ -108,11 +107,24 @@ export const startGame = (socket, gameId) => {
     user.cardOneActive = true;
     user.cardTwoActive = true;
     user.participant = true;
+    user.coins = 7;
   });
   const firstPlayer = getFirstPlayer(gameObj.users);
   gameObj.currentPlayer = firstPlayer;
   resetActivity(gameObj);
   pushCacheState(socket, gameId, gameObj);
+};
+
+export const resetGame = (socket, gameId) => {
+  let gameObj = globalGameState[gameId];
+  gameObj.started = false;
+  gameObj.ended = false;
+  if (Object.keys(gameObj.users).length < 2) {
+    pushCacheState(socket, gameId, gameObj);
+    return;
+  }
+  cacheState(gameId, gameObj);
+  startGame(socket, gameId);
 };
 
 export const removeUser = (socket) => {

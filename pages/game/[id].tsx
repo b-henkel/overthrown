@@ -60,7 +60,7 @@ function GameBase() {
     if (gameState.started) {
       comp = <Game socket={socket} gameState={gameState} userId={userId} />;
     } else if (gameState.ended) {
-      comp = <GameOver gameState={gameState} userId={userId} />;
+      comp = <GameOver socket={socket} gameState={gameState} userId={userId} />;
     } else {
       comp = <Lobby socket={socket} gameState={gameState} userId={userId} />;
     }

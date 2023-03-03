@@ -11,6 +11,7 @@ import {
   phaseToFunction,
   resolveExchange,
   pushCacheState,
+  resetGame,
 } from '../../game/game-state';
 
 import {
@@ -44,6 +45,9 @@ const ioHandler = (req, res) => {
       });
       socket.on('start-game', (data) => {
         startGame(socket, data.gameId);
+      });
+      socket.on('reset-game', (data) => {
+        resetGame(socket, data.gameId);
       });
 
       socket.on('add-user', (data) => {

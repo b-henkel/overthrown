@@ -149,7 +149,15 @@ export default function Lobby(props: Props) {
               return (
                 <ListItem>
                   &rarr;
-                  <Avatar>{String.fromCodePoint(userObj.icon)}</Avatar>
+                  <Avatar
+                    sx={{
+                      border: 2,
+                      borderColor: 'black',
+                      background: 'white',
+                    }}
+                  >
+                    {String.fromCodePoint(userObj.icon)}
+                  </Avatar>
                   {userObj.name}
                 </ListItem>
               );

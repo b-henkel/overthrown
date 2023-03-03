@@ -247,18 +247,34 @@ export default function Player(props: Props) {
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
         {props.user.icon && (
-          <Avatar>{String.fromCodePoint(props.user.icon)}</Avatar>
+          <Avatar
+            sx={{
+              border: 2,
+              borderColor: 'black',
+              background: 'white',
+            }}
+          >
+            {String.fromCodePoint(props.user.icon)}
+          </Avatar>
         )}
         <Typography sx={{ fontSize: 24 }} color={props.user.color} gutterBottom>
           {props.user.name}
         </Typography>
-        <Box
-          sx={{ borderRadius: '25px', backgroundColor: 'gold', boxShadow: 5 }}
-        >
-          <Typography sx={{ fontSize: 24 }} gutterBottom>
+        {props.user.coins && (
+          <Avatar
+            sx={{
+              border: 5,
+              borderColor: '#ffa500',
+              color: 'brown',
+              background:
+                'linear-gradient(135deg, rgba(255,216,0,1) 15%, rgba(255,255,255,1) 38%, rgba(255,203,0,1) 75%)',
+              backgroundColor: 'gold',
+              borderStyle: 'dashed',
+            }}
+          >
             {props.user.coins}
-          </Typography>
-        </Box>
+          </Avatar>
+        )}
       </Box>
       <Box
         sx={{
