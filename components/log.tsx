@@ -18,27 +18,20 @@ export default function Log(props: Props) {
         <Typography sx={{ fontSize: 24 }} color='text.primary'>
           Action Log
         </Typography>
-        <Paper style={{ maxHeight: 360, overflow: 'auto' }}>
+        <Paper style={{ maxHeight: 360, overflow: 'auto', paddingTop: '0px' }}>
           <Typography sx={{ fontSize: 18 }} color='text.secondary'>
             {/* {JSON.stringify(props.gameState)} */}
-            Game ID: {props.gameState.id} Current player:{' '}
-            {props.gameState.currentPlayer}
-            <ul>
-              Users
-              {usersArr.map((user) => {
-                return (
-                  <ul>
-                    <li>{props.gameState.users[user].name}</li>
-                    <ul>
-                      <li>id: {props.gameState.users[user].id}</li>
-                      <li>name: {props.gameState.users[user].name}</li>{' '}
-                      <li>number:{props.gameState.users[user].number}</li>
-                      <li>coins: {props.gameState.users[user].coins}</li>{' '}
-                      <li>cardOne: {props.gameState.users[user].cardOne}</li>{' '}
-                      <li>cardTwo: {props.gameState.users[user].cardTwo}</li>
-                    </ul>
-                  </ul>
-                );
+            Current player:{' '}
+            {props.gameState.users[props.gameState.currentPlayer].name}
+            <ul
+              style={{
+                paddingLeft: '18px',
+                paddingTop: '0px',
+                marginTop: '0px',
+              }}
+            >
+              {props.gameState.log.map((logElm) => {
+                return <li>{logElm}</li>;
               })}
             </ul>
           </Typography>

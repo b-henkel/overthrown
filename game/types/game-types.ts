@@ -43,6 +43,7 @@ export type GameObject = {
   currentPlayer: string;
   activity: Activity;
   winner?: User;
+  log: string[];
 };
 
 export type Action = {

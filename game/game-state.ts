@@ -20,6 +20,7 @@ import {
 } from './phase-action-order';
 import { icons } from '../constants/user-icons';
 import _ from 'lodash';
+import { logAction, logChallengeAction, logCounterAction } from './log-util';
 
 export function phaseToFunction(func) {
   // console.log('phase to func received', func);
@@ -63,6 +64,7 @@ export const initGameState = (gameIdOverride = null) => {
     ended: false,
     deck: [],
     currentPlayer: null,
+    log: [],
   };
   globalGameState[gameId] = newGameState;
   cache.put('globalGameState', globalGameState);
@@ -111,6 +113,7 @@ export const startGame = (socket, gameId) => {
   });
   const firstPlayer = getFirstPlayer(gameObj.users);
   gameObj.currentPlayer = firstPlayer;
+  gameObj.log = [];
   resetActivity(gameObj);
   pushCacheState(socket, gameId, gameObj);
 };
@@ -196,6 +199,7 @@ export function handleAction(socket, gameId, action: Action) {
   const gameObj = loadGlobalGameState()[gameId];
   gameObj.activity.action = action.type;
   gameObj.activity.actionTarget = action.target;
+  logAction(gameObj, action);
 
   const actionLogic = actions[action.type];
   console.log('handleAction.actionLogic', action.type, actionLogic);
@@ -286,6 +290,8 @@ const processChallenge = (
   action,
   gameObj: GameObject
 ) => {
+  const actionType =
+    originatingPhase === CHALLENGE_COUNTER_ACTION ? 'counter' : action.type;
   console.log(
     'Process challenge called',
     challengingUserId,
@@ -322,6 +328,14 @@ const processChallenge = (
       // Game should move forward as normal and the action or counter action should complete
       // change claimed card to a new card from deck and shuffle
       console.log('Defending User was valid, challenger should lose a card');
+
+      logChallengeAction(
+        gameObj,
+        actionType,
+        challengingUserId,
+        defendingUserId,
+        challengingUserId
+      );
       const { deck, cardOut } = swap(gameObj.deck, claimedCard);
       gameObj.deck = deck;
       if (defendingUserCardOne === claimedCard) {
@@ -349,6 +363,13 @@ const processChallenge = (
       // remove card from counter actor
       console.log(
         'Challenger was right! Original actor or counteractor loses a card'
+      );
+      logChallengeAction(
+        gameObj,
+        actionType,
+        challengingUserId,
+        defendingUserId,
+        defendingUserId
       );
       const lastInfluence = checkLastInfluence(defendingUser);
       if (lastInfluence) {
@@ -429,6 +450,7 @@ export function handleCounterAction(socket, gameId, action: Action) {
   const gameObj = loadGlobalGameState()[gameId];
   gameObj.activity.counterActorCard = action.counterActorCard;
   if (action.response === 'block') {
+    logCounterAction(gameObj, socket.id);
     gameObj.activity.counterActor = socket.id;
     gameObj.activity.phase = CHALLENGE_COUNTER_ACTION;
   } else {
