@@ -147,7 +147,7 @@ export default function Lobby(props: Props) {
           {props.gameState &&
             Object.entries(props.gameState.users).map(([userID, userObj]) => {
               return (
-                <ListItem>
+                <ListItem key={userObj.id}>
                   &rarr;
                   <Avatar
                     sx={{

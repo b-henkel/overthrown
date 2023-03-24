@@ -1,5 +1,6 @@
 {
   "name": "overthrown",
+  "homepage": "https://overthrown.bhenkel.com",
   "private": true,
   "scripts": {
     "dev": "next dev",

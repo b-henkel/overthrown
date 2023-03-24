@@ -30,8 +30,8 @@ export default function Log(props: Props) {
                 marginTop: '0px',
               }}
             >
-              {props.gameState.log.map((logElm) => {
-                return <li>{logElm}</li>;
+              {props.gameState.log.map((logElm, index) => {
+                return <li key={index}>{logElm}</li>;
               })}
             </ul>
           </Typography>

@@ -106,7 +106,7 @@ export default function Game(props: Props) {
     const gridItems = encoding.map((isPlayer, index) => {
       if (index === 4) {
         return (
-          <Grid item xs={1}>
+          <Grid item xs={1} key={index}>
             <Banker gameObject={props.gameState} user={currentUser} />
           </Grid>
         );
@@ -115,7 +115,7 @@ export default function Game(props: Props) {
       console.log('user:', user);
 
       return (
-        <Grid item xs={1}>
+        <Grid item xs={1} key={index}>
           <Player
             socket={props.socket}
             user={user ? user : emptyUser}
@@ -151,11 +151,11 @@ export default function Game(props: Props) {
         )}
       <Grid container spacing={1} columns={3} justifyContent={'center'} p={1}>
         {setUpOtherPlayers()}
-        <Grid item xs={1}>
+        <Grid item xs={1} key={'log'}>
           {/* chat/ log */}
           <Log gameState={props.gameState} />
         </Grid>
-        <Grid item xs={1}>
+        <Grid item xs={1} key={'player'}>
           <Player
             user={currentUser}
             gameState={props.gameState}
@@ -167,7 +167,7 @@ export default function Game(props: Props) {
             yourPlayerParticipant={currentUser.participant}
           />
         </Grid>
-        <Grid item xs={1}>
+        <Grid item xs={1} key={'actions'}>
           {/* action panel. lie indicator*/}
           <Actions
             userCount={Object.values(props.gameState.users).length}

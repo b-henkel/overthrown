@@ -83,25 +83,6 @@ const rows = [
   createData('contessa-icon.svg', 'Contessa', 'X', 'X', 'Blocks Assassination'),
 ];
 
-const style = {
-  width: 800,
-  height: 800,
-  minWidth: 700,
-  maxWidth: 1200,
-  minHeight: 700,
-  maxHeight: 1200,
-  display: 'flex',
-  justifyContent: 'center',
-  m: 1,
-  p: 1,
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  typography: 'body1',
-  background: '#FFF',
-};
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -181,7 +162,26 @@ export default function CustomizedTables(props: Props) {
 
   return (
     <Modal open={props.rulesModal} onClose={handleClose}>
-      <Box sx={style}>
+      <Box
+        sx={{
+          width: 800,
+          height: 800,
+          minWidth: 700,
+          maxWidth: 1200,
+          minHeight: 700,
+          maxHeight: 1200,
+          display: 'flex',
+          justifyContent: 'center',
+          m: 1,
+          p: 1,
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          typography: 'body1',
+          background: '#FFF',
+        }}
+      >
         <Box>
           <Box
             sx={{

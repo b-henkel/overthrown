@@ -15,18 +15,6 @@ type Props = {
   socket: Socket;
 };
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 800,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
-
 export default function Exchange(props: Props) {
   const [open, setOpen] = React.useState(true);
   const [deckCardOne, setDeckCardOne] = React.useState('');
@@ -106,7 +94,19 @@ export default function Exchange(props: Props) {
         aria-labelledby='modal-modal-title'
         aria-describedby='modal-modal-description'
       >
-        <Box sx={style}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 800,
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
           <Typography>
             {`Please select ${playerActiveCardCount} card(s) to keep. The rest will be returned to the deck`}
           </Typography>
