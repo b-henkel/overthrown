@@ -6,6 +6,7 @@ import Game from '../../components/game';
 import Lobby from '../../components/lobby';
 import GameOver from '../../components/game-over';
 import { GameObject } from '../../game/types/game-types';
+import { v4 as uuidv4 } from 'uuid';
 
 // TODO the initial game object with users should be marked with some started:False flag
 function GameBase() {
@@ -14,6 +15,22 @@ function GameBase() {
   const [socket, setSocket] = useState<Socket | undefined>(null);
   const [gameState, setGameState] = useState<GameObject | undefined>(null);
   const [userId, setUserId] = useState<string | undefined>(null);
+
+  const [name, setName] = useState(() => {
+    // getting stored value
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('name');
+      const initialValue = JSON.parse(saved);
+      return initialValue || uuidv4();
+    } else {
+      return '';
+    }
+  });
+
+  useEffect(() => {
+    // storing input name
+    localStorage.setItem('name', JSON.stringify(name));
+  }, [name]);
 
   useEffect(() => {
     fetch('/api/socketio').finally(() => {

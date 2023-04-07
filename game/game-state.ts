@@ -122,6 +122,7 @@ export const resetGame = (socket, gameId) => {
   let gameObj = globalGameState[gameId];
   gameObj.started = false;
   gameObj.ended = false;
+  gameObj.currentPlayer = null;
   if (Object.keys(gameObj.users).length < 2) {
     pushCacheState(socket, gameId, gameObj);
     return;
@@ -176,6 +177,7 @@ const nextTurn = (currentPlayer, gameObj: GameObject) => {
     (user) => user.participant
   );
   if (participants.length < 2) {
+    console.log('Participants: ', participants);
     gameObj.ended = true;
     gameObj.started = false;
     gameObj.winner = participants[0];
