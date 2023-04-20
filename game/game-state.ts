@@ -85,6 +85,7 @@ export const addUser = (socket, gameId, user: User) => {
   } else {
     gameObj.users[user.id] = {
       id: user.id,
+      socketId: user.socketId,
       name: user.name,
       color: '#FF0000',
       cardOne: null,
@@ -97,8 +98,22 @@ export const addUser = (socket, gameId, user: User) => {
   pushCacheState(socket, gameId, gameObj);
 };
 
+export const reconnectUser = (socket, userId, gameId) => {
+  const gameObj = globalGameState[gameId];
+  if (!userId || !gameObj.users || !(userId in gameObj.users)) {
+    return;
+  }
+  const user = gameObj.users[userId];
+  // TODO check if userId is null
+  if (user.cardOneActive || user.cardTwoActive) {
+    user.participant = true;
+  }
+  user.socketId = socket.id;
+  pushCacheState(socket, gameId, gameObj);
+};
+
 export const startGame = (socket, gameId) => {
-  let gameObj = globalGameState[gameId];
+  const gameObj = globalGameState[gameId];
   gameObj.started = true;
   const { hands, deck } = deal(Object.keys(gameObj.users).length);
   gameObj.deck = deck;
@@ -133,17 +148,20 @@ export const resetGame = (socket, gameId) => {
 
 export const removeUser = (socket) => {
   Object.entries(globalGameState).forEach(([gameId, gameObj]) => {
-    if (Object.keys(gameObj.users).includes(socket.id)) {
-      gameObj.users[socket.id].participant = false;
+    const user = Object.values(gameObj.users).find(
+      (item) => item.socketId === socket.id
+    );
+    if (user) {
+      gameObj.users[user.id].participant = false;
       let participants = Object.values(gameObj.users).filter(
         (user) => user.participant
       );
-      if (gameObj.currentPlayer === socket.id || participants.length === 1) {
-        nextTurn(socket.id, gameObj);
+      if (gameObj.currentPlayer === user.id || participants.length === 1) {
+        nextTurn(user.id, gameObj);
       } else {
         resetActivity(gameObj);
       }
-      delete gameObj.users[socket.id];
+      // delete gameObj.users[userId];
       socket.to(gameId).emit('state-update', gameObj);
     }
   });
@@ -289,6 +307,7 @@ const processChallenge = (
   expectedReason,
   originatingPhase,
   socket,
+  userId,
   action,
   gameObj: GameObject
 ) => {
@@ -387,7 +406,7 @@ const processChallenge = (
       return;
     }
   } else {
-    gameObj.activity.passingUsers.push(socket.id);
+    gameObj.activity.passingUsers.push(userId);
 
     if (
       gameObj.activity.passingUsers.length ===
@@ -414,16 +433,22 @@ const processChallenge = (
   }
 };
 
-export function handleChallengeAction(socket, gameId, action: Action) {
+export function handleChallengeAction(
+  socket,
+  gameId,
+  userId: string,
+  action: Action
+) {
   console.log('*** handleChallengeAction');
   const gameObj = loadGlobalGameState()[gameId];
   processChallenge(
-    socket.id,
+    userId,
     gameObj.currentPlayer,
     translateActionToCard(gameObj.activity.action),
     'challenge',
     CHALLENGE_ACTION,
     socket,
+    userId,
     action,
     gameObj
   );
@@ -447,16 +472,21 @@ export function resolveChallengeAction(socket, gameId, action: Action) {
   console.log(' ------- ');
 }
 
-export function handleCounterAction(socket, gameId, action: Action) {
+export function handleCounterAction(
+  socket,
+  gameId,
+  userId: string,
+  action: Action
+) {
   console.log('*** handleCounterAction');
   const gameObj = loadGlobalGameState()[gameId];
   gameObj.activity.counterActorCard = action.counterActorCard;
   if (action.response === 'block') {
-    logCounterAction(gameObj, socket.id);
-    gameObj.activity.counterActor = socket.id;
+    logCounterAction(gameObj, userId);
+    gameObj.activity.counterActor = userId;
     gameObj.activity.phase = CHALLENGE_COUNTER_ACTION;
   } else {
-    gameObj.activity.passingUsers.push(socket.id);
+    gameObj.activity.passingUsers.push(userId);
 
     if (
       gameObj.activity.passingUsers.length ===
@@ -479,18 +509,24 @@ export function resolveCounterAction(socket, gameId, action: Action) {
   pushCacheState(socket, gameId, gameObj);
   console.log(' ------- ');
 }
-export function handleChallengeCounterAction(socket, gameId, action: Action) {
+export function handleChallengeCounterAction(
+  socket,
+  gameId,
+  userId: string,
+  action: Action
+) {
   console.log('*** handleChallengeCounterAction');
   const gameObj = loadGlobalGameState()[gameId];
   const actionLogic = actions[action.type];
   if (actionLogic.canBeCountered) {
     processChallenge(
-      socket.id,
+      userId,
       gameObj.activity.counterActor,
       gameObj.activity.counterActorCard,
       'doubt',
       CHALLENGE_COUNTER_ACTION,
       socket,
+      userId,
       action,
       gameObj
     );
@@ -502,7 +538,7 @@ export function resolveChallengeCounterAction(socket, gameId, action: Action) {
 
 export function resolveExchange(socket, gameId, user: User, deck: string[]) {
   const gameObj = loadGlobalGameState()[gameId];
-  gameObj.users[socket.id] = user;
+  gameObj.users[user.id] = user;
   // update the user object with user selection
   // suffle deck
   shuffle(deck);

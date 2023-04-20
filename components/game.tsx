@@ -18,6 +18,7 @@ import { Button } from '@mui/material';
 
 const emptyUser: User = {
   id: null,
+  socketId: null,
   name: null,
   coins: null,
   color: null,
@@ -119,6 +120,7 @@ export default function Game(props: Props) {
           <Player
             socket={props.socket}
             user={user ? user : emptyUser}
+            userId={props.userId}
             isActiveUser={
               user ? props.gameState.currentPlayer === user.id : null
             }
@@ -158,6 +160,7 @@ export default function Game(props: Props) {
         <Grid item xs={1} key={'player'}>
           <Player
             user={currentUser}
+            userId={props.userId}
             gameState={props.gameState}
             isActiveUser={props.gameState.currentPlayer === props.userId}
             phase={props.gameState.activity.phase}
@@ -171,6 +174,7 @@ export default function Game(props: Props) {
           {/* action panel. lie indicator*/}
           <Actions
             userCount={Object.values(props.gameState.users).length}
+            userId={props.userId}
             socket={props.socket}
             isActiveUser={props.gameState.currentPlayer === props.userId}
             cardOne={currentUser.cardOne}

@@ -12,6 +12,7 @@ import {
   resolveExchange,
   pushCacheState,
   resetGame,
+  reconnectUser,
 } from '../../game/game-state';
 
 import {
@@ -34,7 +35,6 @@ const ioHandler = (req, res) => {
 
     io.on('connection', (socket) => {
       socket.on('join', (gameId) => {
-        console.log(`Socket ${socket.id} joining ${gameId}`);
         socket.join(gameId);
         pushState(socket, gameId);
       });
@@ -54,10 +54,15 @@ const ioHandler = (req, res) => {
         console.log(`Trying to add user ${JSON.stringify(data)}`);
         // TODO need to mod the global game object to add the users?
         addUser(socket, data.gameId, {
-          id: socket.id,
+          id: data.userId,
+          socketId: socket.id,
           name: data.username,
         });
         // socket.to(data.gameId).emit("state-update", updatedGameState);
+      });
+      socket.on('reconnect', (data) => {
+        console.log('reconnect: ', data);
+        reconnectUser(socket, data.userId, data.gameId);
       });
 
       socket.on(ACTION, (data) => {
@@ -68,15 +73,20 @@ const ioHandler = (req, res) => {
 
       socket.on(CHALLENGE_ACTION, (data) => {
         //
-        handleChallengeAction(socket, data.gameId, data.action);
+        handleChallengeAction(socket, data.gameId, data.userId, data.action);
       });
 
       socket.on(COUNTER_ACTION, (data) => {
-        handleCounterAction(socket, data.gameId, data.action);
+        handleCounterAction(socket, data.gameId, data.userId, data.action);
       });
 
       socket.on(CHALLENGE_COUNTER_ACTION, (data) => {
-        handleChallengeCounterAction(socket, data.gameId, data.action);
+        handleChallengeCounterAction(
+          socket,
+          data.gameId,
+          data.userId,
+          data.action
+        );
       });
 
       socket.on(EXCHANGE, (data) => {

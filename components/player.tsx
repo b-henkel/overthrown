@@ -13,6 +13,7 @@ import { cardBack, toImage } from '../constants/cards';
 
 type Props = {
   user: User;
+  userId: string;
   socket?: Socket;
   style?: object;
   isActiveUser?: boolean;
@@ -45,6 +46,7 @@ export default function Player(props: Props) {
     // event.preventDefault();
     props.socket.emit(props.phase, {
       gameId: props.gameId,
+      userId: props.userId,
       action: {
         type: action,
         target: targetPlayer,
@@ -239,7 +241,7 @@ export default function Player(props: Props) {
     <Card
       sx={{
         height: '32vh',
-        // opacity: props.user.id === null ? 0.4 : 0.7,
+        opacity: props.user.participant ? 1.0 : 0.5,
         backgroundColor: `rgba(${activeColor}, ${tileOpacity})`,
         whiteSpace: 'nowrap',
         // bgcolor: props.isActiveUser && 'primary.main',

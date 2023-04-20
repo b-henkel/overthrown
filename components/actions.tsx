@@ -12,6 +12,7 @@ import Tooltip from '@mui/material/Tooltip';
 
 type Props = {
   userCount: number;
+  userId: string;
   socket: Socket;
   isActiveUser: boolean;
   cardOne: string;
@@ -38,6 +39,7 @@ export default function Actions(props: Props) {
     setDisabled(true);
     props.socket.emit('action', {
       gameId: props.gameId,
+      userId: props.userId,
       action: { type: value, target: null },
     });
   };

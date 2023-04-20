@@ -14,12 +14,12 @@ function GameBase() {
   const { id: gameId } = router.query;
   const [socket, setSocket] = useState<Socket | undefined>(null);
   const [gameState, setGameState] = useState<GameObject | undefined>(null);
-  const [userId, setUserId] = useState<string | undefined>(null);
+  // const [userId, setUserId] = useState<string | undefined>(null);
 
-  const [name, setName] = useState(() => {
+  const [userId, setUserId] = useState(() => {
     // getting stored value
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('name');
+      const saved = localStorage.getItem('userId');
       const initialValue = JSON.parse(saved);
       return initialValue || uuidv4();
     } else {
@@ -28,9 +28,15 @@ function GameBase() {
   });
 
   useEffect(() => {
+    if (gameId && socket) {
+      socket.emit('reconnect', { userId, gameId });
+    }
+  }, [gameId, socket]);
+
+  useEffect(() => {
     // storing input name
-    localStorage.setItem('name', JSON.stringify(name));
-  }, [name]);
+    localStorage.setItem('userId', JSON.stringify(userId));
+  }, [userId]);
 
   useEffect(() => {
     fetch('/api/socketio').finally(() => {
@@ -39,8 +45,6 @@ function GameBase() {
 
       socket.on('connect', () => {
         console.log('connect');
-        socket.emit('hello', 'init');
-        setUserId(socket.id);
       });
 
       socket.on('hello', (data) => {

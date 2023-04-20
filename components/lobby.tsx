@@ -40,7 +40,11 @@ export default function Lobby(props: Props) {
     }
     if (props.socket) {
       console.log('Trying to emit?');
-      props.socket.emit('add-user', { username: sanitizedUser, gameId });
+      props.socket.emit('add-user', {
+        username: sanitizedUser,
+        gameId,
+        userId: props.userId,
+      });
     } else {
       console.log('no socket available');
     }
