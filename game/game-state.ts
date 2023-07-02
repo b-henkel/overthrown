@@ -124,7 +124,7 @@ export const startGame = (socket, gameId) => {
     user.cardOneActive = true;
     user.cardTwoActive = true;
     user.participant = true;
-    user.coins = 7;
+    user.coins = 2;
   });
   const firstPlayer = getFirstPlayer(gameObj.users);
   gameObj.currentPlayer = firstPlayer;
